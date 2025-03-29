@@ -3,7 +3,7 @@ param location_abbreviation string ='ne'
 param resource_number string='01'
 param suffix string = '${env}-${location_abbreviation}-${resource_number}'
 param location string ='northeurope'
-param workspaces_log_omnisync_name string = 'log-omnisync--${suffix}'
+param workspaces_log_omnisync_name string = 'log-omnisync-${suffix}'
 
 resource workspaces_log_omnisync 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: workspaces_log_omnisync_name

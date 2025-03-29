@@ -3,9 +3,8 @@ param location_abbreviation string ='ne'
 param resource_number string='01'
 param suffix string = '${env}-${location_abbreviation}-${resource_number}'
 param location string ='northeurope'
-
 param appi_omnisyncintegration_name string = 'appi-omnisyncintegration-${suffix}'
-param workspaces_log_omnisync_prod_ne_01_externalid string = '/subscriptions/fd892721-fbea-4f9d-b961-db12a74a90a7/resourceGroups/rg-omnisynclogicapps-prod-ne-01/providers/Microsoft.OperationalInsights/workspaces/log-omnisync-prod-ne-01'
+param workspaces_log_omnisync_prod_ne_01_externalid string = '/subscriptions/${subscription().subscriptionId}/resourceGroups/${resourceGroup().name}/providers/Microsoft.OperationalInsights/workspaces/log-omnisync-${suffix}'
 
 resource appi_omnisyncintegration 'microsoft.insights/components@2020-02-02' = {
   name: appi_omnisyncintegration_name
