@@ -1,0 +1,27 @@
+{%- assign changedFields = content.payload.ChangeEventHeader.changedFields -%}
+
+{
+   "Operation": "{{ content.payload.ChangeEventHeader.changeType | capitalize }}",
+   "Entity": "Customer",
+   "Values": "{
+				\"CustomerCode\": \"{{ content.payload.cgcloud__Account_Number__c }}\",				
+				{%- for changedField in changedFields -%}
+					{% if changedField == "Name" %}
+						\"CompanyName\": \"{{ content.payload.Name }}\",
+					{% elsif changedField == "cgcloud__Account_Email__c" %}
+						\"EmailAddress\": \"{{ content.payload.cgcloud__Account_Email__c }}\",
+					{% elsif changedField == "Phone" %}
+						\"Phone\": \"{{ content.payload.Phone }}\",
+					{% elsif changedField == "LastModifiedDate" %}
+						\"UpdatedDate\": \"{{ content.payload.LastModifiedDate }}\",
+					{% endif %}
+				{%- endfor -%}
+				\"AddressLine1\": \"{{ content.payload.ShippingAddress.Street }} {{ content.payload.ShippingAddress.City }} {{ content.payload.ShippingAddress.PostalCode }} {{ content.payload.ShippingAddress.State }} {{ content.payload.ShippingAddress.Country}}\",
+				\"Latitude\": \"{{ content.payload.ShippingAddress.Latitude }}\",
+				\"Longitude\": \"{{ content.payload.ShippingAddress.Longitude }}\",
+				\"CustomerType\": \"Company\",
+				\"SalesForceId\": \"{{ content.payload.ChangeEventHeader.recordIds | first }}\"
+			  }",
+	"CreatedDate": "{{ "now" | date: "%Y-%m-%d %H:%M" }}",
+    "UpdatedDate": "{{ "now" | date: "%Y-%m-%d %H:%M" }}"
+}

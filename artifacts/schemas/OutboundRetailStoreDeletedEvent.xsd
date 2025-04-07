@@ -1,0 +1,35 @@
+<schema elementFormDefault="qualified" targetNamespace="http://soap.sforce.com/2005/09/outbound"
+          xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		      xmlns:ent="urn:enterprise.soap.sforce.com"
+          xmlns:ens="urn:sobject.enterprise.soap.sforce.com"
+		      xmlns:tns="http://soap.sforce.com/2005/09/outbound"
+          xmlns="http://www.w3.org/2001/XMLSchema">
+  <import namespace="urn:enterprise.soap.sforce.com" schemaLocation="ID.xsd"/>
+  <import namespace="urn:sobject.enterprise.soap.sforce.com" schemaLocation="RetailStoreDeletedEvent.xsd"/>
+    <!-- <element name="notifications"> -->
+  <element name="notifications" type="tns:RetailStoreDeletedEventType"/>
+      <complexType name="RetailStoreDeletedEventType">
+        <sequence>
+            <element name="OrganizationId" type="ent:ID"/>
+            <element name="ActionId" type="ent:ID"/>
+            <element name="SessionId" type="xsd:string" nillable="true"/>
+            <element name="EnterpriseUrl" type="xsd:string"/>
+            <element name="PartnerUrl" type="xsd:string"/>
+            <element name="Notification" maxOccurs="100" type="tns:RetailStoreDeletedEvent__cNotification"/>
+        </sequence>
+      </complexType>
+    <!-- </element> -->
+    <complexType name="RetailStoreDeletedEvent__cNotification">
+      <sequence>
+        <element name="Id" type="ent:ID"/>
+        <element name="sObject" type="ens:RetailStoreDeletedEvent__c"/>
+      </sequence>
+    </complexType>
+    <!-- <element name="notificationsResponse"> -->
+      <complexType name="notificationsResponse">
+        <sequence>
+          <element name="Ack" type="xsd:boolean"/>
+        </sequence>
+      </complexType>
+    <!-- </element> -->
+</schema>

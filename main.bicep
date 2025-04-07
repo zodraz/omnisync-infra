@@ -6,14 +6,6 @@ param objectId string ='05f9dbf8-3e61-43a5-8ae6-a57ece430f3e'
 @secure()
 param geoapiSecret string = ''
 
-// module eventgridModule './eventgrid.bicep' = {
-//   name: 'storageDeployment'
-//   params: {
-//     env: env
-//     location: location
-//   }
-// }
-
 module eventHubModule './eventhub.bicep' = {
   name: 'eventHubDeployment'
   params: {
@@ -46,8 +38,18 @@ module storageAccountModule './storageaccount.bicep' = {
   }
 }
 
-module servicePlanModule './serviceplan.bicep' = {
-  name: 'servicePlanDeployment'
+// module servicePlanModule './serviceplan.bicep' = {
+//   name: 'servicePlanDeployment'
+//   params: {
+//     env: env
+//     location: location
+//     location_abbreviation: location_abbreviation
+//     resource_number: resource_number
+//   }
+// }
+
+module integrationAccountModule './integrationAccount.bicep' = {
+  name: 'integrationAccountDeployment'
   params: {
     env: env
     location: location
@@ -56,16 +58,39 @@ module servicePlanModule './serviceplan.bicep' = {
   }
 }
 
-module logicAppModule './logicapp.bicep' = {
-  name: 'logicAppDeployment'
+// module logicAppModule './logicapp.bicep' = {
+//   name: 'logicAppDeployment'
+//   params: {
+//     env: env
+//     location: location
+//     location_abbreviation: location_abbreviation
+//     resource_number: resource_number
+//   }
+//   dependsOn: [
+//     integrationAccountModule
+//   ]
+// }
+module logicAppsEhConnectionModule './logicapps/eh-connection.bicep' = {
+  name: 'logicAppsEhConnectioneployment'
   params: {
     env: env
     location: location
     location_abbreviation: location_abbreviation
     resource_number: resource_number
   }
+}
+
+module logicAppsSfFabricAccountsModule './logicapps/wf-sf-fabric-accounts.bicep' = {
+  name: 'logicAppsSfFabricAccountsDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    ia_omnisync_id: integrationAccountModule.outputs.ia_omnisync_id
+  }
   dependsOn: [
-    servicePlanModule
+    logicAppsEhConnectionModule
   ]
 }
 
@@ -86,5 +111,16 @@ module applicationInsightsModule './applicationinsights.bicep' = {
     location: location
     location_abbreviation: location_abbreviation
     resource_number: resource_number
+  }
+}
+
+module eventgridModule './eventgrid.bicep' = {
+  name: 'storageDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    topics_evgt_omnisyncsalesforce_webhook_url_account:logicAppsSfFabricAccountsModule.outputs.wf_sffabricomnisyncaccounts_callbackurl
   }
 }

@@ -1,0 +1,1 @@
+{"type":"object","properties":{"SalesForceId":{"type":"string"},"CurrencyKey":{"type":"string"},"CurrencyCode":{"type":"string"},"CurrencyDescription":{"type":"string"},"ConversionRate":{"type":"number"},"IsDeleted":{"type":"boolean"},"CreatedDate":{"type":"string"},"UpdatedDate":{"type":"string"}}}

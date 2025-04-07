@@ -74,7 +74,6 @@ resource kv_omnisync 'Microsoft.KeyVault/vaults@2024-12-01-preview' = {
     enableRbacAuthorization: false
     enablePurgeProtection: null
     vaultUri: 'https://${kv_omnisync_name}${environment().suffixes.keyvaultDns}/'
-    provisioningState: 'Succeeded'
     publicNetworkAccess: 'Enabled'
   }
 }

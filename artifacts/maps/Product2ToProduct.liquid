@@ -1,0 +1,56 @@
+{
+   "Operation": "{{ content.payload.ChangeEventHeader.changeType | capitalize }}",
+   "Entity": "Product",
+   "Values": "{				
+				\"ProductCode\": \"{{ content.payload.cgcloud__Consumer_Goods_Product_Code__c }}\",			
+				\"ProductName\": \"{{ content.payload.Name }}\",
+				\"ProductDescription\": \"{{ content.payload.cgcloud__Description_1_Language_1__c }}\",
+				\"ProductSubcategoryKey\": \"{{ content.payload.CategoryId__c }}\",
+				\"CurrencyKey\": \"{{ content.payload.CurrencyIsoCode }}\",
+				\"Manufacturer\": \"{{ content.payload.cgcloud__Manufacturer__c }}\",
+				\"BrandName\": \"{{ content.payload.Brand__c }}\",
+				\"ClassName\": \"{{ content.payload.Class__c }}\",
+				{%- if content.payload.Class__c == "Economy" -%}
+					\"ClassID\": 1,
+				{%- elsif content.payload.Class__c == "Regular" -%}
+					\"ClassID\": 2,
+				{%- elsif content.payload.Class__c == "Deluxe" -%}
+					\"ClassID\": 3,
+				{%- else' -%}
+					\"ClassID\": -1,
+				{% endif %}
+				\"ColorID\": \"{{ content.payload.ColorId__c }}\",
+				\"ColorName\": \"{{ content.payload.Color__c }}\",
+				\"Size\": \"{{ content.payload.cgcloud__Size__c }}\",
+				{% if content.payload.SizeUnitOfMeasure__c == "meters" %}
+					\"SizeUnitMeasureID\": 1,
+				{% elsif content.payload.SizeUnitOfMeasure__c == "centimeters" %}
+					\"SizeUnitMeasureID\": 2,
+				{% elsif content.payload.SizeUnitOfMeasure__c == "millimeters" %}
+					\"SizeUnitMeasureID\": 3,
+				{% elsif content.payload.SizeUnitOfMeasure__c == "feet" %}
+					\"SizeUnitMeasureID\": 2,
+				{% elsif content.payload.SizeUnitOfMeasure__c == "inches" %}
+					\"SizeUnitMeasureID\": 3,
+				{% elsif content.payload.SizeUnitOfMeasure__c == "yards" %}
+					\"SizeUnitMeasureID\": 3,
+				{%- else' -%}
+					\"SizeUnitMeasureID\": -1,
+				{% endif %}
+				\"SizeUnitMeasureName\": \"{{ content.payload.SizeUnitOfMeasure__c }}\",
+				\"Weight\": \"{{ content.payload.cgcloud__Weight__c }}\",
+				\"WeightUnitMeasureID\": \"{{ content.payload.WeightUnitOfMeasureId__c }}\",
+				\"WeightUnitMeasureName\": \"{{ content.payload.WeightUnitOfMeasure__c }}\",
+				\"AvailableForSaleDate\": \"{{ content.payload.AvailableForSaleDate__c }}\",
+				{% if content.payload.IsActive == "True" %}
+					\"Status\": \"On\",
+				{%- else' -%}
+					\"Status\": \"Off\",
+				{% endif %}
+				\"CreatedDate\": \"{{ content.payload.CreatedDate }}\",
+				\"UpdatedDate\": \"{{ content.payload.LastModifiedDate }}\",
+				\"SalesForceId\": \"{{ content.payload.ChangeEventHeader.recordIds | first }}\"
+			  }",
+	"CreatedDate": "{{ "now" | date: "%Y-%m-%d %H:%M" }}",
+    "UpdatedDate": "{{ "now" | date: "%Y-%m-%d %H:%M" }}"
+}

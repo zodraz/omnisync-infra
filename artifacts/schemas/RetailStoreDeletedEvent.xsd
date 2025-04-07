@@ -1,0 +1,46 @@
+<schema elementFormDefault="qualified" 
+    xmlns="http://www.w3.org/2001/XMLSchema" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:ent="urn:enterprise.soap.sforce.com"
+    xmlns:ens="urn:sobject.enterprise.soap.sforce.com"
+	targetNamespace="urn:sobject.enterprise.soap.sforce.com">
+		
+    <import namespace="urn:enterprise.soap.sforce.com" schemaLocation="ID.xsd"/>
+    
+    <!-- Base sObject (abstract) -->
+    <complexType name="sObject">
+        <sequence>
+            <element name="fieldsToNull" type="xsd:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+            <element name="Id" type="ent:ID" nillable="true" />
+        </sequence>
+    </complexType>
+
+    <complexType name="AggregateResult">
+        <complexContent>
+            <extension base="ens:sObject">
+                <sequence>
+                    <any namespace="##targetNamespace" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="RetailStoreDeletedEvent__c">
+        <complexContent>
+            <extension base="ens:sObject">
+                <sequence>
+                    <element name="CreatedById" nillable="true" minOccurs="0" type="ent:ID"/>
+                    <element name="CreatedDate" nillable="true" minOccurs="0" type="xsd:dateTime"/>
+                    <element name="CurrencyIsoCode" nillable="true" minOccurs="0" type="xsd:string"/>
+                    <element name="DeletedId__c" nillable="true" minOccurs="0" type="xsd:string"/>
+                    <element name="IsDeleted" nillable="true" minOccurs="0" type="xsd:boolean"/>
+                    <element name="LastModifiedById" nillable="true" minOccurs="0" type="ent:ID"/>
+                    <element name="LastModifiedDate" nillable="true" minOccurs="0" type="xsd:dateTime"/>
+                    <element name="Name" nillable="true" minOccurs="0" type="xsd:string"/>
+                    <element name="OwnerId" nillable="true" minOccurs="0" type="ent:ID"/>
+                    <element name="SystemModstamp" nillable="true" minOccurs="0" type="xsd:dateTime"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+</schema>

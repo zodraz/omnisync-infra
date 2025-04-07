@@ -1,0 +1,23 @@
+$version: 1
+$input: JSON
+$output: JSON
+$sourceSchema: RetailStore2.json
+$targetSchema: Store.json
+root:
+  SalesForceId: /root/Id
+  CustomerKey: /root/AccountId
+  StoreTypeID: /root/StoreTypeID__c
+  StoreType: /root/StoreType
+  StoreName: /root/Name
+  StoreDescription: /root/Name
+  StorePhone: /root/Phone__c
+  StoreFax: /root/Fax__c
+  AddressLine1: >-
+    trim(concat(/root/Street, ' ', /root/City, ' ', /root/State, ' ',
+    /root/Country))
+  EmployeeCount: /root/EmployeeCount__c
+  Latitude: string(/root/Latitude)
+  Longitude: string(/root/Longitude)
+  IsDeleted: /root/IsDeleted
+  CreatedDate: /root/CreatedDate
+  UpdatedDate: /root/LastModifiedDate

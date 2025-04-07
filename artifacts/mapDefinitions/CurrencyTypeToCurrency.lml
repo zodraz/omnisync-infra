@@ -1,0 +1,12 @@
+$version: 1
+$input: JSON
+$output: JSON
+$sourceSchema: CurrencyType.json
+$targetSchema: Currency.json
+root:
+  SalesForceId: /root/Id
+  CurrencyCode: /root/IsoCode
+  ConversionRate: /root/ConversionRate
+  IsDeleted: not(/root/IsActive)
+  CreatedDate: /root/CreatedDate
+  UpdatedDate: /root/LastModifiedDate

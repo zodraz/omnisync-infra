@@ -1,0 +1,19 @@
+{
+   "Operation": "{{ content.payload.ChangeEventHeader.changeType | capitalize }}",
+   "Entity": "Customer",
+   "Values": "{	
+				\"CustomerCode\": \"{{ content.payload.cgcloud__Account_Number__c }}\",					
+				\"CompanyName\": \"{{ content.payload.Name }}\",
+				\"EmailAddress\": \"{{ content.payload.cgcloud__Account_Email__c }}\",
+				\"Phone\": \"{{ content.payload.Phone }}\",
+				\"CreatedDate\": \"{{ content.payload.CreatedDate }}\",
+				\"UpdatedDate\": \"{{ content.payload.LastModifiedDate }}\",
+				\"AddressLine1\": \"{{ content.payload.ShippingAddress.Street }} {{ content.payload.ShippingAddress.City }} {{ content.payload.ShippingAddress.PostalCode }} {{ content.payload.ShippingAddress.State }} {{ content.payload.ShippingAddress.Country}}\",
+				\"Latitude\": \"{{ content.payload.ShippingAddress.Latitude }}\",
+				\"Longitude\": \"{{ content.payload.ShippingAddress.Longitude }}\",
+				\"CustomerType\": \"Company\",
+				\"SalesForceId\": \"{{ content.payload.ChangeEventHeader.recordIds | first }}\"
+			  }",
+	"CreatedDate": "{{ "now" | date: "%Y-%m-%d %H:%M" }}",
+    "UpdatedDate": "{{ "now" | date: "%Y-%m-%d %H:%M" }}"
+}

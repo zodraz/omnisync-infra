@@ -1,0 +1,15 @@
+<schema elementFormDefault="qualified" 
+    xmlns="http://www.w3.org/2001/XMLSchema" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:sf="urn:enterprise.soap.sforce.com"
+    targetNamespace="urn:enterprise.soap.sforce.com">
+    
+    <!-- <element name="IDType" type="sf:ID"/> -->
+    <!-- Our simple ID Type -->
+    <simpleType name="ID">
+        <restriction base="xsd:string">
+            <length value="18"/>
+            <pattern value='[a-zA-Z0-9]{18}'/>
+        </restriction>
+    </simpleType>
+</schema>
