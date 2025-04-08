@@ -23,8 +23,7 @@ resource ia_omnisync_AccountToCustomer 'Microsoft.Logic/integrationAccounts/maps
   properties: {
     mapType: 'Liquid'
     content: loadTextContent('artifacts/maps/AccountToCustomer.liquid')
-    contentType: 'application/liquid'
-    // fileName: 'AccountToCustomer.liquid'
+    contentType: 'text/plain'
   }
 }
 
@@ -34,8 +33,37 @@ resource ia_omnisync_AccountToCustomerUpdate 'Microsoft.Logic/integrationAccount
   properties: {
     mapType: 'Liquid'
     content: loadTextContent('artifacts/maps/AccountToCustomer.liquid')
-    contentType: 'application/liquid'
-    // fileName: 'AccountToCustomer.liquid'
+    contentType: 'text/plain'
+  }
+}
+
+resource ia_omnisync_Product2ToProductUpdate 'Microsoft.Logic/integrationAccounts/maps@2019-05-01' = {
+  parent: ia_omnisync
+  name: 'Product2ToProductUpdate'
+  properties: {
+    mapType: 'Liquid'
+    content: loadTextContent('artifacts/maps/Product2ToProductUpdate.liquid')
+    contentType: 'text/plain'
+  }
+}
+
+resource ia_omnisync_Product2ToProduct 'Microsoft.Logic/integrationAccounts/maps@2019-05-01' = {
+  parent: ia_omnisync
+  name: 'Product2ToProduct'
+  properties: {
+    mapType: 'Liquid'
+    content: loadTextContent('artifacts/maps/Product2ToProduct.liquid')
+    contentType: 'text/plain'
+  }
+}
+
+resource ia_omnisync_CurrencyTypeToCurrency 'Microsoft.Logic/integrationAccounts/maps@2019-05-01' = {
+  parent: ia_omnisync
+  name: 'CurrencyTypeToCurrency'
+  properties: {
+    mapType: 'Xslt30'
+    content: loadTextContent('artifacts/maps/CurrencyTypeToCurrency.xslt')
+    contentType: 'application/xml'
   }
 }
 

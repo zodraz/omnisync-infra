@@ -17,6 +17,14 @@
           <string key="SalesForceId">{/*/*[@key='Id']}</string>
         </xsl:otherwise>
       </xsl:choose>
+       <xsl:choose>
+        <xsl:when test="local-name-from-QName(node-name(/*/*[@key='StoreCode__c'])) = 'null'">
+          <null key="StoreCode" />
+        </xsl:when>
+        <xsl:otherwise>
+          <number key="StoreCode">{/*/*[@key='StoreCode__c']}</number>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:choose>
         <xsl:when test="local-name-from-QName(node-name(/*/*[@key='AccountId'])) = 'null'">
           <null key="CustomerKey" />

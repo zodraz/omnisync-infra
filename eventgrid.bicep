@@ -21,7 +21,7 @@ resource evgt_omnisyncsalesforce 'Microsoft.EventGrid/topics@2025-02-15' = {
     publicNetworkAccess: 'Enabled'
     inboundIpRules: []
     disableLocalAuth: false
-    dataResidencyBoundary: 'Withinlocation'
+    // dataResidencyBoundary: 'Withinlocation'
   }
 }
 

@@ -36,6 +36,7 @@
                     <element name="IsDeleted" nillable="true" minOccurs="0" type="xsd:boolean"/>
                     <element name="LastModifiedById" nillable="true" minOccurs="0" type="ent:ID"/>
                     <element name="LastModifiedDate" nillable="true" minOccurs="0" type="xsd:dateTime"/>
+                    <element name="StoreCode__c" nillable="true" minOccurs="0" type="xsd:string"/>
                     <element name="Name" nillable="true" minOccurs="0" type="xsd:string"/>
                     <element name="OwnerId" nillable="true" minOccurs="0" type="ent:ID"/>
                     <element name="SystemModstamp" nillable="true" minOccurs="0" type="xsd:dateTime"/>

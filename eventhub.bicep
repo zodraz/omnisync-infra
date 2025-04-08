@@ -85,9 +85,3 @@ resource evh_omnisynccdc_eventHubrootKey 'Microsoft.EventHub/namespaces/eventhub
     ]
   }
 }
-
-// resource evh_omnisynccdc_consumerGroup 'Microsoft.EventHub/namespaces/eventhubs/consumergroups@2024-05-01-preview' = {
-//   parent: evh_omnisynccdc
-//   name: '$Default'
-//   properties: {}
-// }

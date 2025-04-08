@@ -33,7 +33,7 @@ resource sol_logicapps_omnisync 'Microsoft.OperationsManagement/solutions@2015-1
   plan: {
     name: sol_logicapps_omnisync_name
     promotionCode: ''
-    product: 'OMSGallery/LogicAppsManagement'
+    product: 'LogicAppsManagement'
     publisher: 'Microsoft'
   }
   properties: {

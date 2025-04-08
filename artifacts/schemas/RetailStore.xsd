@@ -64,6 +64,7 @@
                     <element name="RetailLocationGroupId" nillable="true" minOccurs="0" type="ent:ID"/>
                     <element name="State" nillable="true" minOccurs="0" type="xsd:string"/>
                     <element name="StoreType" nillable="true" minOccurs="0" type="xsd:string"/>
+                    <element name="StoreCode__c" nillable="true" minOccurs="0" type="xsd:string"/>
                     <element name="StoreTypeID__c" nillable="true" minOccurs="0" type="xsd:double"/>
                     <element name="Street" nillable="true" minOccurs="0" type="xsd:string"/>
                     <element name="SystemModstamp" nillable="true" minOccurs="0" type="xsd:dateTime"/>
