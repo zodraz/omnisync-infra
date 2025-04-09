@@ -26,7 +26,7 @@
 							\"ClassID\": 2,
 						{% elsif content.payload.Class__c == "Deluxe" %}
 							\"ClassID\": 3,
-						{%- else' -%}
+						{%- else -%}
 							\"ClassID\": -1,
 						{% endif %}
 					{% elsif changedField == "ColorId__c" %}
@@ -49,7 +49,7 @@
 							\"SizeUnitMeasureID\": 3,
 						{% elsif content.payload.SizeUnitOfMeasure__c == "yards" %}
 							\"SizeUnitMeasureID\": 3,
-						{%- else' -%}
+						{%- else -%}
 							\"SizeUnitMeasureID\": -1,
 						{% endif %}
 					{% elsif changedField == "cgcloud__Weight__c" %}
@@ -63,7 +63,7 @@
 					{% elsif changedField == "IsActive" %}
 						{% if content.payload.IsActive == "True" %}
 							\"Status\": \"On\",
-						{%- else' -%}
+						{%- else -%}
 							\"Status\": \"Off\",
 						{% endif %}
 					{% elsif changedField == "CreatedDate" %}

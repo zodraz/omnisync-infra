@@ -1,4 +1,5 @@
 param evhns_omnisync_name string = 'evhns-omnisync-${suffix}'
+param eh_omnisync_name string = 'eh-omnisync-${suffix}'
 param env string = 'prod'
 param location_abbreviation string ='ne'
 param resource_number string='01'
@@ -47,7 +48,7 @@ resource evhns_omnisync_rootManageSharedAccessKey 'Microsoft.EventHub/namespaces
 
 resource evh_omnisynccdc 'Microsoft.EventHub/namespaces/eventhubs@2024-05-01-preview' = {
   parent: evhns_omnisync
-  name: 'evh-omnisynccdc'
+  name: eh_omnisync_name
   properties: {
     messageTimestampDescription: {
       timestampType: 'LogAppend'

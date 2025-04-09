@@ -1,0 +1,12 @@
+{	
+	\"SalesForceId\": \"{{ content.Id }}\",					
+	\"CurrencyCode\": \"{{ content.IsoCode }}\",
+	\"ConversionRate\": \"{{ content.ConversionRate }}\",
+	{% if content.IsActive %}
+		\"IsDeleted\": \"False\",
+	{%- else -%}
+		\"IsDeleted\": \"True\",
+	{% endif %}
+	\"CreatedDate\": \"{{ content.CreatedDate }}\",
+	\"UpdatedDate\": \"{{ content.LastModifiedDate }}\"
+}

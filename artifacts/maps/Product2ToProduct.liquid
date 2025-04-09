@@ -16,7 +16,7 @@
 					\"ClassID\": 2,
 				{%- elsif content.payload.Class__c == "Deluxe" -%}
 					\"ClassID\": 3,
-				{%- else' -%}
+				{%- else -%}
 					\"ClassID\": -1,
 				{% endif %}
 				\"ColorID\": \"{{ content.payload.ColorId__c }}\",
@@ -34,7 +34,7 @@
 					\"SizeUnitMeasureID\": 3,
 				{% elsif content.payload.SizeUnitOfMeasure__c == "yards" %}
 					\"SizeUnitMeasureID\": 3,
-				{%- else' -%}
+				{%- else -%}
 					\"SizeUnitMeasureID\": -1,
 				{% endif %}
 				\"SizeUnitMeasureName\": \"{{ content.payload.SizeUnitOfMeasure__c }}\",
@@ -44,7 +44,7 @@
 				\"AvailableForSaleDate\": \"{{ content.payload.AvailableForSaleDate__c }}\",
 				{% if content.payload.IsActive == "True" %}
 					\"Status\": \"On\",
-				{%- else' -%}
+				{%- else -%}
 					\"Status\": \"Off\",
 				{% endif %}
 				\"CreatedDate\": \"{{ content.payload.CreatedDate }}\",

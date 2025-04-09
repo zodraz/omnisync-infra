@@ -61,10 +61,21 @@ resource ia_omnisync_CurrencyTypeToCurrency 'Microsoft.Logic/integrationAccounts
   parent: ia_omnisync
   name: 'CurrencyTypeToCurrency'
   properties: {
-    mapType: 'Xslt30'
-    content: loadTextContent('artifacts/maps/CurrencyTypeToCurrency.xslt')
-    contentType: 'application/xml'
+    mapType: 'Liquid'
+    content: loadTextContent('artifacts/maps/CurrencyTypeToCurrency.liquid')
+    contentType: 'text/plain'
   }
+}
+
+resource ia_omnisync_RetailStoreDeletedEvent 'Microsoft.Logic/integrationAccounts/schemas@2019-05-01' = {
+  parent: ia_omnisync
+  name: 'RetailStoreDeletedEvent'
+  properties: {
+    schemaType: 'Xml'
+    targetNamespace: 'urn:sobject.enterprise.soap.sforce.com'
+    content: loadTextContent('artifacts/schemas/RetailStoreDeletedEvent.xsd')
+    contentType: 'application/xml'
+    }
 }
 
 output ia_omnisync_id string = ia_omnisync.id
