@@ -55,7 +55,7 @@ resource wf_sffabricomnisyncretailstoredelete 'Microsoft.Logic/workflows@2019-05
             content: '@variables(\'notifications\')'
             integrationAccount: {
               schema: {
-                name: 'RetailStoreDeletedEvent'
+                name: 'OutboundRetailStoreDeletedEvent'
               }
             }
           }
