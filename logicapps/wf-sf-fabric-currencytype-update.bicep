@@ -51,12 +51,12 @@ resource wf_sffabricomnisynccurrencyupdate 'Microsoft.Logic/workflows@2019-05-01
       actions: {
         Create_CDC_Currency_Record: {
           runAfter: {
-            Transform_CurrencyType_JSON_To_Currency_JSON: [
+            Fix_Transformated_JSON: [
               'Succeeded'
             ]
           }
           type: 'Compose'
-          inputs: '"Operation": "Update",\n"Entity": "Currency",\n"Values": "@{body(\'Transform_CurrencyType_JSON_To_Currency_JSON\')}",\n"CreatedDate": "@{utcNow()}",\n"UpdatedDate": "@{utcNow()}"'
+          inputs: '@outputs(\'Fix_Transformated_JSON\')'
         }
         Send_CDC_event: {
           runAfter: {
@@ -89,10 +89,19 @@ resource wf_sffabricomnisynccurrencyupdate 'Microsoft.Logic/workflows@2019-05-01
             content: '@triggerBody()'
             integrationAccount: {
               map: {
-                name: 'CurrencyTypeToCurrency'
+                name: 'CurrencyTypeToCurrencyUpdate'
               }
             }
           }
+        }
+        Fix_Transformated_JSON: {
+          runAfter: {
+            Transform_CurrencyType_JSON_To_Currency_JSON: [
+              'Succeeded'
+            ]
+          }
+          type: 'Compose'
+          inputs: '@json(replace(replace(replace(string(body(\'Transform_CurrencyType_JSON_To_Currency_JSON\')),   \'"now"\',concat(\'"\', utcNow(),\'"\')),\'\t\',\'\'),\'\r\n\',\'\'))'
         }
       }
       outputs: {}

@@ -67,6 +67,16 @@ resource ia_omnisync_CurrencyTypeToCurrency 'Microsoft.Logic/integrationAccounts
   }
 }
 
+resource ia_omnisync_CurrencyTypeToCurrencyUpdate 'Microsoft.Logic/integrationAccounts/maps@2019-05-01' = {
+  parent: ia_omnisync
+  name: 'CurrencyTypeToCurrencyUpdate'
+  properties: {
+    mapType: 'Liquid'
+    content: loadTextContent('artifacts/maps/CurrencyTypeToCurrencyUpdate.liquid')
+    contentType: 'text/plain'
+  }
+}
+
 resource ia_omnisync_RetailStoreDeletedEvent 'Microsoft.Logic/integrationAccounts/schemas@2019-05-01' = {
   parent: ia_omnisync
   name: 'RetailStoreDeletedEvent'
