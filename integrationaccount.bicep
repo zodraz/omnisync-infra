@@ -88,4 +88,15 @@ resource ia_omnisync_RetailStoreDeletedEvent 'Microsoft.Logic/integrationAccount
     }
 }
 
+resource ia_omnisync_ID 'Microsoft.Logic/integrationAccounts/schemas@2019-05-01' = {
+  parent: ia_omnisync
+  name: 'ID'
+  properties: {
+    schemaType: 'Xml'
+    targetNamespace: 'urn:enterprise.soap.sforce.com'
+    content: loadTextContent('artifacts/schemas/ID.xsd')
+    contentType: 'application/xml'
+    }
+}
+
 output ia_omnisync_id string = ia_omnisync.id

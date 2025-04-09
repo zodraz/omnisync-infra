@@ -133,7 +133,7 @@ resource wf_sffabricomnisyncpricebooks 'Microsoft.Logic/workflows@2019-05-01' = 
                 body: {
                   ContentData: '@base64(outputs(\'Create_Product__Deleted_Price_CDC__\'))'
                 }
-                path: '/@{encodeURIComponent(\'evh-omnisynccdc-prod-ne-01\')}/events'
+                path: '/@{encodeURIComponent(\'eh-omnisync-prod-ne-01\')}/events'
                 queries: {
                   partitionKey: '0'
                 }
@@ -179,7 +179,7 @@ resource wf_sffabricomnisyncpricebooks 'Microsoft.Logic/workflows@2019-05-01' = 
                   body: {
                     ContentData: '@base64(outputs(\'Create_Product__Upsert_Price_CDC_\'))'
                   }
-                  path: '/@{encodeURIComponent(\'evh-omnisynccdc-prod-ne-01\')}/events'
+                  path: '/@{encodeURIComponent(\'eh-omnisync-prod-ne-01\')}/events'
                   queries: {
                     partitionKey: '0'
                   }

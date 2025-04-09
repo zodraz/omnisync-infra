@@ -53,9 +53,9 @@ resource wf_sffabricomnisyncretailstoreinsert 'Microsoft.Logic/workflows@2019-05
           runAfter: {}
           type: 'Compose'
           inputs: {
-            Operation: 'Insert'
+            Operation: 'Create'
             Entity: 'Store'
-            Values: '"SalesForceId": "@{triggerBody()?[\'Id\']}","CustomerKey": "@{triggerBody()?[\'AccountId\']}", "StoreTypeID":@{triggerBody()?[\'StoreTypeID__c\']} , "StoreType": "@{triggerBody()?[\'StoreType\']}", "StoreCode": "@{triggerBody()?[\'StoreCode__c\']}", "StoreName": "@{triggerBody()?[\'Name\']}","StoreDescription": "@{triggerBody()?[\'Description\']}","AddressLine1": "@{concat(triggerBody()?[\'Street\'],\' \', triggerBody()?[\'City\'],\' \',triggerBody()?[\'PostalCode\'],\' \',triggerBody()?[\'State\'],\' \',triggerBody()?[\'Country\'])}", "StorePhone": "@{triggerBody()?[\'Phone__c\']}",  "StoreFax": "@{triggerBody()?[\'Fax__c\']}", "EmployeeCount": "@{triggerBody()?[\'EmployeeCount__c\']}","Latitude": "@{triggerBody()?[\'Latitude\']}","Longitude": "@{triggerBody()?[\'Longitude\']}","IsDeleted": "False","CreatedDate": "@{triggerBody()?[\'CreatedDate\']}","UpdatedDate": "@{triggerBody()?[\'LastModifiedDate\']}"}'
+            Values: '{ "SalesForceId": "@{triggerBody()?[\'Id\']}","CustomerKey": "@{triggerBody()?[\'AccountId\']}", "StoreTypeID":@{triggerBody()?[\'StoreTypeID__c\']} , "StoreType": "@{triggerBody()?[\'StoreType\']}", "StoreCode": "@{triggerBody()?[\'StoreCode__c\']}", "StoreName": "@{triggerBody()?[\'Name\']}","StoreDescription": "@{triggerBody()?[\'Description\']}","AddressLine1": "@{concat(triggerBody()?[\'Street\'],\' \', triggerBody()?[\'City\'],\' \',triggerBody()?[\'PostalCode\'],\' \',triggerBody()?[\'State\'],\' \',triggerBody()?[\'Country\'])}", "StorePhone": "@{triggerBody()?[\'Phone__c\']}",  "StoreFax": "@{triggerBody()?[\'Fax__c\']}", "EmployeeCount": "@{triggerBody()?[\'EmployeeCount__c\']}","Latitude": "@{triggerBody()?[\'Latitude\']}","Longitude": "@{triggerBody()?[\'Longitude\']}","IsDeleted": "False","CreatedDate": "@{triggerBody()?[\'CreatedDate\']}","UpdatedDate": "@{triggerBody()?[\'LastModifiedDate\']}"}'
             CreatedDate: '@utcNow()'
             UpdatedDate: '@utcNow()'
           }
