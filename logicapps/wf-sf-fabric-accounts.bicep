@@ -184,7 +184,7 @@ resource wf_sffabricomnisyncaccounts 'Microsoft.Logic/workflows@2019-05-01' = {
               type: 'Liquid'
               kind: 'JsonToJson'
               inputs: {
-                content: '@body(\'Parse_CDC_JSON\').data.message'
+                content: '@json(triggerBody().data.message)'
                 integrationAccount: {
                   map: {
                     name: 'AccountToCustomerUpdate'
@@ -225,7 +225,7 @@ resource wf_sffabricomnisyncaccounts 'Microsoft.Logic/workflows@2019-05-01' = {
                 type: 'Liquid'
                 kind: 'JsonToJson'
                 inputs: {
-                  content: '@triggerBody().data.message'
+                  content: '@json(triggerBody().data.message)'
                   integrationAccount: {
                     map: {
                       name: 'AccountToCustomer'
