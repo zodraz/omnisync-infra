@@ -116,21 +116,11 @@ resource wf_sffabricomnisyncaccounts 'Microsoft.Logic/workflows@2019-05-01' = {
                     ShippingAddress: {
                       type: 'object'
                       properties: {
-                        Street: {
-                          type: 'string'
-                        }
-                        City: {
-                          type: 'string'
-                        }
-                        State: {
-                          type: 'string'
-                        }
-                        PostalCode: {
-                          type: 'string'
-                        }
-                        Country: {
-                          type: 'string'
-                        }
+                        Street: {}
+                        City: {}
+                        State: {}
+                        PostalCode: {}
+                        Country: {}
                         Latitude: {}
                         Longitude: {}
                         GeocodeAccuracy: {}
@@ -153,9 +143,7 @@ resource wf_sffabricomnisyncaccounts 'Microsoft.Logic/workflows@2019-05-01' = {
                     OwnerId: {}
                     CreatedDate: {}
                     CreatedById: {}
-                    LastModifiedDate: {
-                      type: 'integer'
-                    }
+                    LastModifiedDate: {}
                     LastModifiedById: {}
                     SourceSystemIdentifier: {}
                     Jigsaw: {}
@@ -163,9 +151,7 @@ resource wf_sffabricomnisyncaccounts 'Microsoft.Logic/workflows@2019-05-01' = {
                     AccountSource: {}
                     SicDesc: {}
                     OperatingHoursId: {}
-                    cgcloud__Account_Email__c: {
-                      type: 'string'
-                    }
+                    cgcloud__Account_Email__c: {}
                     cgcloud__Account_Number__c: {}
                     cgcloud__Account_Template__c: {}
                     cgcloud__ExternalId__c: {}

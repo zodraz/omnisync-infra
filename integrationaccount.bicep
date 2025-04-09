@@ -32,7 +32,7 @@ resource ia_omnisync_AccountToCustomerUpdate 'Microsoft.Logic/integrationAccount
   name: 'AccountToCustomerUpdate'
   properties: {
     mapType: 'Liquid'
-    content: loadTextContent('artifacts/maps/AccountToCustomer.liquid')
+    content: loadTextContent('artifacts/maps/AccountToCustomerUpdate.liquid')
     contentType: 'text/plain'
   }
 }

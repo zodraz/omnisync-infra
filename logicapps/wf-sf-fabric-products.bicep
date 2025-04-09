@@ -54,7 +54,7 @@ resource wf_sffabricomnisyncproducts 'Microsoft.Logic/workflows@2019-05-01' = {
           }
           type: 'ParseJson'
           inputs: {
-            content: '@triggerBody().data.message'
+            content: '@json(triggerBody().data.message)'
             schema: {
               type: 'object'
               properties: {
@@ -119,21 +119,11 @@ resource wf_sffabricomnisyncproducts 'Microsoft.Logic/workflows@2019-05-01' = {
                     ShippingAddress: {
                       type: 'object'
                       properties: {
-                        Street: {
-                          type: 'string'
-                        }
-                        City: {
-                          type: 'string'
-                        }
-                        State: {
-                          type: 'string'
-                        }
-                        PostalCode: {
-                          type: 'string'
-                        }
-                        Country: {
-                          type: 'string'
-                        }
+                        Street: {}
+                        City: {}
+                        State: {}
+                        PostalCode: {}
+                        Country: {}
                         Latitude: {}
                         Longitude: {}
                         GeocodeAccuracy: {}
@@ -156,9 +146,7 @@ resource wf_sffabricomnisyncproducts 'Microsoft.Logic/workflows@2019-05-01' = {
                     OwnerId: {}
                     CreatedDate: {}
                     CreatedById: {}
-                    LastModifiedDate: {
-                      type: 'integer'
-                    }
+                    LastModifiedDate: {}
                     LastModifiedById: {}
                     SourceSystemIdentifier: {}
                     Jigsaw: {}
@@ -166,9 +154,7 @@ resource wf_sffabricomnisyncproducts 'Microsoft.Logic/workflows@2019-05-01' = {
                     productsource: {}
                     SicDesc: {}
                     OperatingHoursId: {}
-                    cgcloud__Account_Email__c: {
-                      type: 'string'
-                    }
+                    cgcloud__Account_Email__c: {}
                     cgcloud__Account_Number__c: {}
                     cgcloud__Account_Template__c: {}
                     cgcloud__ExternalId__c: {}
@@ -208,10 +194,10 @@ resource wf_sffabricomnisyncproducts 'Microsoft.Logic/workflows@2019-05-01' = {
               type: 'Liquid'
               kind: 'JsonToJson'
               inputs: {
-                content: '@triggerBody().data.message'
+                content: '@json(triggerBody().data.message)'
                 integrationAccount: {
                   map: {
-                    name: 'AccountToCustomerUpdate'
+                    name: 'Product2ToProductUpdate'
                   }
                 }
               }
@@ -252,7 +238,7 @@ resource wf_sffabricomnisyncproducts 'Microsoft.Logic/workflows@2019-05-01' = {
                   content: '@triggerBody().data.message'
                   integrationAccount: {
                     map: {
-                      name: 'AccountToCustomer'
+                      name: 'Product2ToProduct'
                     }
                   }
                 }
@@ -363,21 +349,11 @@ resource wf_sffabricomnisyncproducts 'Microsoft.Logic/workflows@2019-05-01' = {
                     ShippingAddress: {
                       type: 'object'
                       properties: {
-                        Street: {
-                          type: 'string'
-                        }
-                        City: {
-                          type: 'string'
-                        }
-                        State: {
-                          type: 'string'
-                        }
-                        PostalCode: {
-                          type: 'string'
-                        }
-                        Country: {
-                          type: 'string'
-                        }
+                        Street: {}
+                        City: {}
+                        State: {}
+                        PostalCode: {}
+                        Country: {}
                         Latitude: {}
                         Longitude: {}
                         GeocodeAccuracy: {}
@@ -400,9 +376,7 @@ resource wf_sffabricomnisyncproducts 'Microsoft.Logic/workflows@2019-05-01' = {
                     OwnerId: {}
                     CreatedDate: {}
                     CreatedById: {}
-                    LastModifiedDate: {
-                      type: 'integer'
-                    }
+                    LastModifiedDate: {}
                     LastModifiedById: {}
                     SourceSystemIdentifier: {}
                     Jigsaw: {}
@@ -410,9 +384,7 @@ resource wf_sffabricomnisyncproducts 'Microsoft.Logic/workflows@2019-05-01' = {
                     productsource: {}
                     SicDesc: {}
                     OperatingHoursId: {}
-                    cgcloud__Account_Email__c: {
-                      type: 'string'
-                    }
+                    cgcloud__Account_Email__c: {}
                     cgcloud__Account_Number__c: {}
                     cgcloud__Account_Template__c: {}
                     cgcloud__ExternalId__c: {}
