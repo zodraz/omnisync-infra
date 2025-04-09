@@ -1,0 +1,2 @@
+[System.Environment]::SetEnvironmentVariable('geoapiSecret','d978ae07dc0545738d559385dc435376', 'User')
+ az deployment group create --resource-group rg-omnisync-prod-ne-01 --template-file main.bicep --parameters main.bicepparam

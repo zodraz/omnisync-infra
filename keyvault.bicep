@@ -72,7 +72,7 @@ resource kv_omnisync 'Microsoft.KeyVault/vaults@2024-12-01-preview' = {
     enableSoftDelete: true
     softDeleteRetentionInDays: 90
     enableRbacAuthorization: false
-    enablePurgeProtection: null
+    // enablePurgeProtection: null
     vaultUri: 'https://${kv_omnisync_name}${environment().suffixes.keyvaultDns}/'
     publicNetworkAccess: 'Enabled'
   }

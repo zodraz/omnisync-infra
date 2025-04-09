@@ -1,7 +1,9 @@
 param env string = 'prod'
 param location_abbreviation string ='ne'
 param location string ='northeurope'
-param resource_number string='03'
+param resource_number string='01'
+param kv_resource_number string='09'
+param st_resource_number string='03'
 param objectId string ='05f9dbf8-3e61-43a5-8ae6-a57ece430f3e'
 @secure()
 param geoapiSecret string = ''
@@ -24,7 +26,7 @@ module keyVaultModule './keyvault.bicep' = {
     location_abbreviation: location_abbreviation
     objectId: objectId
     geoapiSecret: geoapiSecret
-    resource_number: '08'
+    resource_number: kv_resource_number
   }
 }
 
@@ -34,7 +36,7 @@ module storageAccountModule './storageaccount.bicep' = {
     env: env
     location: location
     location_abbreviation: location_abbreviation
-    resource_number: resource_number
+    resource_number: st_resource_number
   }
 }
 
