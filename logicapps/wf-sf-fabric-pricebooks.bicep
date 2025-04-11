@@ -3,7 +3,7 @@ param location_abbreviation string ='ne'
 param resource_number string='01'
 param suffix string = '${env}-${location_abbreviation}-${resource_number}'
 param location string ='northeurope'
-param wf_sffabricomnisyncpricebooks_name string = 'wf-sffabricomnisyncpricebooks_name-${suffix}'
+param wf_sffabricomnisyncpricebooks_name string = 'wf-sffabricomnisyncpricebooks-${suffix}'
 param connections_eventhubs_id string=''
 param connections_salesforce_id string=''
 

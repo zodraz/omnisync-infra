@@ -235,7 +235,7 @@ resource wf_sffabricomnisyncproducts 'Microsoft.Logic/workflows@2019-05-01' = {
                 type: 'Liquid'
                 kind: 'JsonToJson'
                 inputs: {
-                  content: '@triggerBody().data.message'
+                  content: '@json(triggerBody().data.message)'
                   integrationAccount: {
                     map: {
                       name: 'Product2ToProduct'

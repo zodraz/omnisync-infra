@@ -8,6 +8,7 @@ param topics_evgt_omnisyncsalesforce_webhook_url_account string = 'https://local
 param topics_evgt_omnisyncsalesforce_webhook_url_pricebookentry string = 'https://localhost'
 param topics_evgt_omnisyncsalesforce_webhook_url_product string = 'https://localhost'
 param topics_evgt_omnisyncsalesforce_webhook_url_orderitem string = 'https://localhost'
+param topics_evgt_omnisyncsalesforce_webhook_url_orderitem_deleted string = 'https://localhost'
 
 resource evgt_omnisyncsalesforce 'Microsoft.EventGrid/topics@2025-02-15' = {
   name: evgt_omnisyncsalesforce_name
@@ -114,6 +115,31 @@ resource evgs_omnisyncsalesforcesalesorders 'Microsoft.EventGrid/topics/eventSub
     }
     filter: {
       subjectBeginsWith: 'OrderItem'
+      enableAdvancedFilteringOnArrays: true
+    }
+    labels: []
+    eventDeliverySchema: 'CloudEventSchemaV1_0'
+    retryPolicy: {
+      maxDeliveryAttempts: 30
+      eventTimeToLiveInMinutes: 1440
+    }
+  }
+}
+
+resource evgs_omnisyncsalesforcesalesordersdelete 'Microsoft.EventGrid/topics/eventSubscriptions@2025-02-15' = {
+  parent: evgt_omnisyncsalesforce
+  name: 'evgs-omnisyncsalesforcesalesordersdelete-${suffix}'
+  properties: {
+    destination: {
+      properties: {
+        endpointUrl: topics_evgt_omnisyncsalesforce_webhook_url_orderitem_deleted
+        maxEventsPerBatch: 1
+        preferredBatchSizeInKilobytes: 64
+      }
+      endpointType: 'WebHook'
+    }
+    filter: {
+      subjectBeginsWith: '"OrderProductDeleted'
       enableAdvancedFilteringOnArrays: true
     }
     labels: []

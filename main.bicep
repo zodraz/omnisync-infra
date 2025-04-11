@@ -136,6 +136,17 @@ module logicAppsSfFabricOrderDetailsModule './logicapps/wf-sf-fabric-orderdetail
   }
 }
 
+module logicAppsSfFabricOrderDetailsDeleteModule './logicapps/wf-sf-fabric-orderdetails-delete.bicep' = {
+  name: 'logicAppsSfFabricOrderDetailsDeleteDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    connections_eventhubs_id: logicAppsEhConnectionModule.outputs.connections_eventhubs_id
+  }
+}
+
 module logicAppsSfFabricPriceBooksModule './logicapps/wf-sf-fabric-pricebooks.bicep' = {
   name: 'logicAppsSfFabricPriceBooksDeployment'
   params: {
@@ -229,5 +240,6 @@ module eventgridModule './eventgrid.bicep' = {
     topics_evgt_omnisyncsalesforce_webhook_url_product:logicAppsSfFabricProductsModule.outputs.wf_sffabricomnisyncproducts_callbackurl
     topics_evgt_omnisyncsalesforce_webhook_url_pricebookentry: logicAppsSfFabricPriceBooksModule.outputs.wf_sffabricomnisyncpricebooks_callbackurl
     topics_evgt_omnisyncsalesforce_webhook_url_orderitem: logicAppsSfFabricOrderDetailsModule.outputs.wf_sffabricomnisyncorderdetails_callbackurl
+    topics_evgt_omnisyncsalesforce_webhook_url_orderitem_deleted: logicAppsSfFabricOrderDetailsDeleteModule.outputs.wf_sffabricomnisyncorderdetailsdelete_callbackurl
   }
 }
