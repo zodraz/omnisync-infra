@@ -6,6 +6,7 @@ param location string ='northeurope'
 param wf_sf_fabric_omnisync_accounts_name string = 'wf-sf-fabric-omnisyncinc-accounts-${suffix}'
 param ia_omnisync_id string=''
 param connections_eventhubs_id string=''
+param connections_cds_id string=''
 
 resource wf_sf_fabric_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
   name: wf_sf_fabric_omnisync_accounts_name
@@ -107,7 +108,7 @@ resource wf_sf_fabric_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' =
                 inputs: {
                   host: {
                     connection: {
-                      name: '@parameters(\'$connections\')[\'eventhubs-1\'][\'connectionId\']'
+                      name: '@parameters(\'$connections\')[\'eventhubs\'][\'connectionId\']'
                     }
                   }
                   method: 'post'
@@ -439,6 +440,11 @@ resource wf_sf_fabric_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' =
             id: '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Web/locations/${location}/managedApis/eventhubs'
             connectionId: connections_eventhubs_id
             connectionName: 'eventhubs'
+          }
+          commondataservice: {
+            id: '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Web/locations/${location}/managedApis/commondataservice'
+            connectionId: connections_cds_id
+            connectionName: 'commondataservice'
           }
         }
       }

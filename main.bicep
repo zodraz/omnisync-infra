@@ -2,8 +2,8 @@ param env string = 'prod'
 param location_abbreviation string ='ne'
 param location string ='northeurope'
 param resource_number string='01'
-param kv_resource_number string='09'
-param st_resource_number string='03'
+param kv_resource_number string='11'
+param st_resource_number string='04'
 param object_id string ='05f9dbf8-3e61-43a5-8ae6-a57ece430f3e'
 @secure()
 param geo_api_secret string = ''
@@ -72,6 +72,13 @@ module integration_account_module './integration_account.bicep' = {
 //     integrationAccountModule
 //   ]
 // }
+
+module logicapps_cds_connection_module './logicapps/cds_connection.bicep' = {
+  name: 'logicAppsCdsConnectionDeployment'
+  params: {
+    location: location
+  }
+}
 module logicapps_eh_connection_module './logicapps/eh_connection.bicep' = {
   name: 'logicAppsEhConnectionDeployment'
   params: {
@@ -81,13 +88,6 @@ module logicapps_eh_connection_module './logicapps/eh_connection.bicep' = {
 
 module logicapps_sf_connection_module './logicapps/sf_connection.bicep' = {
   name: 'logicAppsSfConnectionDeployment'
-  params: {
-    location: location
-  }
-}
-
-module logicapps_cds_connection_module './logicapps/cds_connection.bicep' = {
-  name: 'logicAppsCdsConnectionDeployment'
   params: {
     location: location
   }
@@ -109,6 +109,19 @@ module logicapps_d365_fabric_accounts_module './logicapps/wf_d365_fabric_account
     resource_number: resource_number
     ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
     connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+    connections_cds_id: logicapps_cds_connection_module.outputs.connections_cds_name_id
+  }
+}
+
+module logicapps_d365_fabric_orderproducts_module './logicapps/wf_d365_fabric_orderproducts.bicep' = {
+  name: 'logicAppsD365FabricOrderProductsDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+    connections_cds_id: logicapps_cds_connection_module.outputs.connections_cds_name_id
   }
 }
 
@@ -210,8 +223,8 @@ module logicapps_sf_fabric_products_module './logicapps/wf_sf_fabric_products.bi
   }
 }
 
-module logicapps_sf_fabric_retailstore_deleted_module './logicapps/wf_sf_fabric_retailstore_delete.bicep' = {
-  name: 'logicAppsSfFabricRetailStoreDeletedDeployment'
+module logicapps_sf_fabric_retailstore_delete_module './logicapps/wf_sf_fabric_retailstore_delete.bicep' = {
+  name: 'logicAppsSfFabricRetailStoreDeleteDeployment'
   params: {
     env: env
     location: location
