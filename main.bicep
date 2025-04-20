@@ -138,6 +138,17 @@ module logicapps_d365_sf_accounts_module './logicapps/wf_d365_sf_accounts.bicep'
   }
 }
 
+module logicapps_sf_d365_accounts_module './logicapps/wf_sf_d365_accounts.bicep' = {
+  name: 'logicAppsSfD365AccountsDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    connections_cds_id: logicapps_cds_connection_module.outputs.connections_cds_name_id
+  }
+}
+
 module logicapps_sf_fabric_accounts_module './logicapps/wf_sf_fabric_accounts.bicep' = {
   name: 'logicAppsSfFabricAccountsDeployment'
   params: {
@@ -288,10 +299,11 @@ module eventgrid_module './event_grid.bicep' = {
     location: location
     location_abbreviation: location_abbreviation
     resource_number: resource_number
-    topics_evgt_omnisync_salesforce_webhook_url_account:logicapps_sf_fabric_accounts_module.outputs.wf_sf_fabric_omnisync_accounts_callbackurl
-    topics_evgt_omnisync_salesforce_webhook_url_product:logicapps_sf_fabric_products_module.outputs.wf_sf_fabric_omnisync_products_callbackurl
-    topics_evgt_omnisync_salesforce_webhook_url_pricebookentry: logicapps_sf_fabric_pricebooks_module.outputs.wf_sf_fabric_omnisync_pricebooks_callbackurl
-    topics_evgt_omnisync_salesforce_webhook_url_orderitem: logicapps_sf_fabric_orderdetails_module.outputs.wf_sf_fabric_omnisync_orderdetails_callbackurl
+    topics_evgt_omnisync_salesforce_fabric_webhook_url_account:logicapps_sf_fabric_accounts_module.outputs.wf_sf_fabric_omnisync_accounts_callbackurl
+    topics_evgt_omnisync_salesforce_fabric_webhook_url_product:logicapps_sf_fabric_products_module.outputs.wf_sf_fabric_omnisync_products_callbackurl
+    topics_evgt_omnisync_salesforce_fabric_webhook_url_pricebookentry: logicapps_sf_fabric_pricebooks_module.outputs.wf_sf_fabric_omnisync_pricebooks_callbackurl
+    topics_evgt_omnisync_salesforce_fabric_webhook_url_orderitem: logicapps_sf_fabric_orderdetails_module.outputs.wf_sf_fabric_omnisync_orderdetails_callbackurl
     // topics_evgt_omnisync_salesforce_webhook_url_orderiktem_deleted: logicAppsSfFabricOrderDetailsDeleteModule.outputs.wf_sf_fabric_omnisync_orderdetails_delete_callbackurl
+    topics_evgt_omnisync_salesforce_d365_webhook_url_account: logicapps_sf_d365_accounts_module.outputs.wf_sf_d365_omnisync_accounts_callbackurl
   }
 }

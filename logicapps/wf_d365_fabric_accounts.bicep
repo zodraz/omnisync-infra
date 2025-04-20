@@ -3,13 +3,13 @@ param location_abbreviation string ='ne'
 param resource_number string='01'
 param suffix string = '${env}-${location_abbreviation}-${resource_number}'
 param location string ='northeurope'
-param wf_sf_fabric_omnisync_accounts_name string = 'wf-sf-fabric-omnisyncinc-accounts-${suffix}'
+param wf_d365_fabric_omnisync_accounts_name string = 'wf-d365-fabric-omnisyncinc-accounts-${suffix}'
 param ia_omnisync_id string=''
 param connections_eventhubs_id string=''
 param connections_cds_id string=''
 
-resource wf_sf_fabric_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
-  name: wf_sf_fabric_omnisync_accounts_name
+resource wf_d365_fabric_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
+  name: wf_d365_fabric_omnisync_accounts_name
   location: location
   properties: {
     state: 'Enabled'

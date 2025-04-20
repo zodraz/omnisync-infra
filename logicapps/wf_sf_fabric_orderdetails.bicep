@@ -174,12 +174,12 @@ resource wf_sf_fabric_omnisync_orderdetails 'Microsoft.Logic/workflows@2019-05-0
       '$connections': {
         value: {
           eventhubs: {
-            id: '/subscriptions/1145166d-1e2c-41f1-a2ca-4325731080ed/providers/Microsoft.Web/locations/northeurope/managedApis/eventhubs'
+            id: '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Web/locations/${location}/managedApis/eventhubs'
             connectionId: connections_eventhubs_id
             connectionName: 'eventhubs'
           }
           salesforce: {
-            id: '/subscriptions/1145166d-1e2c-41f1-a2ca-4325731080ed/providers/Microsoft.Web/locations/northeurope/managedApis/salesforce'
+            id: '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Web/locations/${location}/managedApis/salesforce'
             connectionId: connections_salesforce_id
             connectionName: 'salesforce'
           }
