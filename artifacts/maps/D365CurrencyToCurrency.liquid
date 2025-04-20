@@ -1,0 +1,18 @@
+{
+   "Operation": "{{ content.SdkMessage | capitalize }}",
+   "Entity": "Currency",
+   "Values": "{	
+				\"D365Id\": \"{{ content.ItemInternalId }}\",					
+				\"CurrencyCode\": \"{{ content.isocurrencycode }}\",
+				\"ConversionRate\": \"{{ content.exchangerate }}\",
+				{% if content.statuscode == 2 %}
+					\"IsDeleted\": \"True\",
+				{%- else -%}
+					\"IsDeleted\": \"False\",
+				{% endif %}
+				\"CreatedDate\": \"{{ content.createdon }}\",
+				\"UpdatedDate\": \"{{ content.modifiedon }}\"
+			  }",
+	"CreatedDate": "{{ "now" | date: "%Y-%m-%d %H:%M" }}",
+    "UpdatedDate": "{{ "now" | date: "%Y-%m-%d %H:%M" }}"
+}

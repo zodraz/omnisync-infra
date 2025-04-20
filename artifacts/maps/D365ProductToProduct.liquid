@@ -1,0 +1,37 @@
+{
+   "Operation": "{{ content.SdkMessage | capitalize }}",
+   "Entity": "Product",
+   "Values": "{				
+				\"ProductCode\": \"{{ content.productnumber }}\",			
+				\"ProductName\": \"{{ content.name }}\",
+				\"ProductDescription\": \"{{ content.description }}\",
+				\"ProductSubcategoryKey\": \"{{ content.omnisync_category }}\",
+				\"CurrencyKey\": \"{{ content._transactioncurrencyid_value }}\",
+				\"Manufacturer\": \"{{ content.omnisync_manufacturer }}\",
+				\"BrandName\": \"{{ content.omnisync_brand }}\",
+				\"ClassName\": \"{{ content._omnisync_class_label }}\",
+				\"ClassID\": \"{{ content.omnisync_class }}\",
+				\"ColorID\": \"{{ content.omnisync_color }}\",
+				\"ColorName\": \"{{ content._omnisync_color_label }}\",
+				\"Size\": \"{{ content.size }}\",
+				\"SizeUnitMeasureID\": \"{{ content.omnisync_sizeunitofmeasure }}\",
+				\"SizeUnitMeasureName\": \"{{ content._omnisync_sizeunitofmeasure_label }}\",
+				\"Weight\": \"{{ content.omnisync_weight }}\",
+				\"WeightUnitMeasureID\": \"{{ content.omnisync_weightunitofmeasure }}\",
+				\"WeightUnitMeasureName\": \"{{ content._omnisync_weightunitofmeasure_label }}\",
+				\"AvailableForSaleDate\": \"{{ content.validfromdate }}\",
+				\"StopSaleDate\": \"{{ content.validtodate }}\",
+				{% if content.statuscode == "1" %}
+					\"Status\": \"On\",
+				{%- else -%}
+					\"Status\": \"Off\",
+				{% endif %}
+				\"UnitCost\": \"{{ content.currentcost }}\",
+				\"UnitPrice\": \"{{ content.price }}\",
+				\"CreatedDate\": \"{{ content.createdon }}\",
+				\"UpdatedDate\": \"{{ content.modifiedon }}\",
+				\"D365Id\": \"{{ content.productid }}\"
+			  }",
+	"CreatedDate": "{{ "now" | date: "%Y-%m-%d %H:%M" }}",
+    "UpdatedDate": "{{ "now" | date: "%Y-%m-%d %H:%M" }}"
+}

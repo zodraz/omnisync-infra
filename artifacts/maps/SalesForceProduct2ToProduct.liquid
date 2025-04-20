@@ -42,6 +42,7 @@
 				\"WeightUnitMeasureID\": \"{{ content.payload.WeightUnitOfMeasureId__c }}\",
 				\"WeightUnitMeasureName\": \"{{ content.payload.WeightUnitOfMeasure__c }}\",
 				\"AvailableForSaleDate\": \"{{ content.payload.AvailableForSaleDate__c }}\",
+				\"StopSaleDate\": \"{{ content.payload.StopSaleDate__c }}\",
 				{% if content.payload.IsActive == "True" %}
 					\"Status\": \"On\",
 				{%- else -%}

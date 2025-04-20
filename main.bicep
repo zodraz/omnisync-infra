@@ -236,7 +236,7 @@ module eventgridModule './eventgrid.bicep' = {
     location: location
     location_abbreviation: location_abbreviation
     resource_number: resource_number
-    topics_evgt_omnisyncsalesforce_webhook_url_account:logicAppsSfFabricAccountsModule.outputs.wf_sffabricomnisyncaccounts_callbackurl
+    topics_evgt_omnisyncsalesforce_webhook_url_account:logicAppsSfFabricAccountsModule.outputs.wf_sf_fabric_omnisync_accounts_callbackurl
     topics_evgt_omnisyncsalesforce_webhook_url_product:logicAppsSfFabricProductsModule.outputs.wf_sffabricomnisyncproducts_callbackurl
     topics_evgt_omnisyncsalesforce_webhook_url_pricebookentry: logicAppsSfFabricPriceBooksModule.outputs.wf_sffabricomnisyncpricebooks_callbackurl
     topics_evgt_omnisyncsalesforce_webhook_url_orderitem: logicAppsSfFabricOrderDetailsModule.outputs.wf_sffabricomnisyncorderdetails_callbackurl

@@ -1,0 +1,19 @@
+{
+   "Operation": "{{ content.SdkMessage | capitalize }}",
+   "Entity": "Customer",
+   "Values": "{	
+				\"CustomerCode\": \"{{ content.accountnumber }}\",					
+				\"CompanyName\": \"{{ content.name }}\",
+				\"EmailAddress\": \"{{ content.emailaddress1 }}\",
+				\"Phone\": \"{{ content.telephone1 }}\",
+				\"CreatedDate\": \"{{ content.createdon }}\",
+				\"UpdatedDate\": \"{{ content.modifiedon }}\",
+				\"AddressLine1\": \"{{ content.address1_composite }}\",
+				\"Latitude\": \"{{ content.address1_latitude }}\",
+				\"Longitude\": \"{{ content.address1_longitude }}\",
+				\"CustomerType\": \"Company\",
+				\"D365Id\": \"{{ content.accountid }}\"
+			  }",
+	"CreatedDate": "{{ "now" | date: "%Y-%m-%d %H:%M" }}",
+    "UpdatedDate": "{{ "now" | date: "%Y-%m-%d %H:%M" }}"
+}

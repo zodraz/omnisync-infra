@@ -1,0 +1,23 @@
+{
+   "Operation": "{{ content.SdkMessage | capitalize }}",
+   "Entity": "Store",
+   "Values": "{	
+				\"StoreCode\": \"{{ content.cr989_storecode }}\",					
+				\"CustomerKey\": \"{{ content.name }}\",
+				\"StoreTypeID\": \"{{ content.cr989_storetype }}\",
+				\"StoreType\": \"{{ content._cr989_storetype_label }}\",
+				\"StoreName\": \"{{ content.cr989_storename }}\",
+				\"StoreDescription\": \"{{ content.cr989_storedescription }}\",
+				\"StorePhone\": \"{{ content.cr989_storephone }}\",
+				\"StoreFax\": \"{{ content.cr989_storefax }}\",
+				\"AddressLine1\": \"{{ content.cr989_addressline1 }}\",
+				\"EmployeeCount\": \"{{ content.cr989_employeecount }}\",
+			    \"Latitude\": \"{{ content.address1_latitude }}\",
+				\"Longitude\": \"{{ content.address1_longitude }}\",
+				\"CreatedDate\": \"{{ content.createdon }}\",
+				\"UpdatedDate\": \"{{ content.modifiedon }}\",
+				\"D365Id\": \"{{ content.ItemInternalId }}\"
+			  }",
+	"CreatedDate": "{{ "now" | date: "%Y-%m-%d %H:%M" }}",
+    "UpdatedDate": "{{ "now" | date: "%Y-%m-%d %H:%M" }}"
+}

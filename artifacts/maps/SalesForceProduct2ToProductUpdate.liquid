@@ -60,6 +60,8 @@
 						\"WeightUnitMeasureName\": \"{{ content.payload.WeightUnitOfMeasure__c }}\",
 					{% elsif changedField == "AvailableForSaleDate__c" %}
 						\"AvailableForSaleDate\": \"{{ content.payload.AvailableForSaleDate__c }}\",
+					{% elsif changedField == "StopSaleDate__c" %}
+						\"StopSaleDate\": \"{{ content.payload.StopSaleDate__c }}\",
 					{% elsif changedField == "IsActive" %}
 						{% if content.payload.IsActive == "True" %}
 							\"Status\": \"On\",
