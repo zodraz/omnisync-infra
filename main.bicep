@@ -4,11 +4,11 @@ param location string ='northeurope'
 param resource_number string='01'
 param kv_resource_number string='09'
 param st_resource_number string='03'
-param objectId string ='05f9dbf8-3e61-43a5-8ae6-a57ece430f3e'
+param object_id string ='05f9dbf8-3e61-43a5-8ae6-a57ece430f3e'
 @secure()
-param geoapiSecret string = ''
+param geo_api_secret string = ''
 
-module eventHubModule './eventhub.bicep' = {
+module event_hub_module './event_hub.bicep' = {
   name: 'eventHubDeployment'
   params: {
     env: env
@@ -18,19 +18,19 @@ module eventHubModule './eventhub.bicep' = {
   }
 }
 
-module keyVaultModule './keyvault.bicep' = {
+module key_vault_module './key_vault.bicep' = {
   name: 'keyVaultDeployment'
   params: {
     env: env
     location: location
     location_abbreviation: location_abbreviation
-    objectId: objectId
-    geoapiSecret: geoapiSecret
+    objectId: object_id
+    geoapiSecret: geo_api_secret
     resource_number: kv_resource_number
   }
 }
 
-module storageAccountModule './storageaccount.bicep' = {
+module storage_account_module './storage_account.bicep' = {
   name: 'storageAccountDeployment'
   params: {
     env: env
@@ -40,7 +40,7 @@ module storageAccountModule './storageaccount.bicep' = {
   }
 }
 
-// module servicePlanModule './serviceplan.bicep' = {
+// module servicePlanModule './service_plan.bicep' = {
 //   name: 'servicePlanDeployment'
 //   params: {
 //     env: env
@@ -50,7 +50,7 @@ module storageAccountModule './storageaccount.bicep' = {
 //   }
 // }
 
-module integrationAccountModule './integrationAccount.bicep' = {
+module integration_account_module './integration_account.bicep' = {
   name: 'integrationAccountDeployment'
   params: {
     env: env
@@ -72,67 +72,106 @@ module integrationAccountModule './integrationAccount.bicep' = {
 //     integrationAccountModule
 //   ]
 // }
-module logicAppsEhConnectionModule './logicapps/eh-connection.bicep' = {
-  name: 'logicAppsEhConnectioneployment'
+module logicapps_eh_connection_module './logicapps/eh_connection.bicep' = {
+  name: 'logicAppsEhConnectionDeployment'
   params: {
     location: location
   }
 }
 
-module logicAppsSfConnectionModule './logicapps/sf-connection.bicep' = {
-  name: 'logicAppsSfConnectioneployment'
+module logicapps_sf_connection_module './logicapps/sf_connection.bicep' = {
+  name: 'logicAppsSfConnectionDeployment'
   params: {
     location: location
   }
 }
 
-module logicAppsSfFabricAccountsModule './logicapps/wf-sf-fabric-accounts.bicep' = {
+module logicapps_cds_connection_module './logicapps/cds_connection.bicep' = {
+  name: 'logicAppsCdsConnectionDeployment'
+  params: {
+    location: location
+  }
+}
+
+module logicapps_sql_connection_module './logicapps/sql_connection.bicep' = {
+  name: 'logicAppsSqlConnectionDeployment'
+  params: {
+    location: location
+  }
+}
+
+module logicapps_d365_fabric_accounts_module './logicapps/wf_d365_fabric_accounts.bicep' = {
+  name: 'logicAppsD365FabricAccountsDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+  }
+}
+
+module logicapps_d365_sf_accounts_module './logicapps/wf_d365_sf_accounts.bicep' = {
+  name: 'logicAppsD365SfAccountsDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
+    connections_sql_id: logicapps_sql_connection_module.outputs.connections_sql_id
+    connections_cds_id: logicapps_cds_connection_module.outputs.connections_cds_name_id
+  }
+}
+
+module logicapps_sf_fabric_accounts_module './logicapps/wf_sf_fabric_accounts.bicep' = {
   name: 'logicAppsSfFabricAccountsDeployment'
   params: {
     env: env
     location: location
     location_abbreviation: location_abbreviation
     resource_number: resource_number
-    ia_omnisync_id: integrationAccountModule.outputs.ia_omnisync_id
-    connections_eventhubs_id: logicAppsEhConnectionModule.outputs.connections_eventhubs_id
+    ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
   }
 }
 
-module logicAppsSfFabricCurrencyTypeInsertModule './logicapps/wf-sf-fabric-currencytype-insert.bicep' = {
+module logicapps_sf_fabric_currencytype_insert_module './logicapps/wf_sf_fabric_currencytype_insert.bicep' = {
   name: 'logicAppsSfFabricCurrencyTypeInsertDeployment'
   params: {
     env: env
     location: location
     location_abbreviation: location_abbreviation
     resource_number: resource_number
-    ia_omnisync_id: integrationAccountModule.outputs.ia_omnisync_id
-    connections_eventhubs_id: logicAppsEhConnectionModule.outputs.connections_eventhubs_id
-    connections_salesforce_id: logicAppsSfConnectionModule.outputs.connections_salesforce_id
+    ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+    connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
   }
 }
 
-module logicAppsSfFabricCurrencyTypeUpdateModule './logicapps/wf-sf-fabric-currencytype-update.bicep' = {
+module logicapps_sf_fabric_currencytype_update_module './logicapps/wf_sf_fabric_currencytype_update.bicep' = {
   name: 'logicAppsSfFabricCurrencyTypeUpdateDeployment'
   params: {
     env: env
     location: location
     location_abbreviation: location_abbreviation
     resource_number: resource_number
-    ia_omnisync_id: integrationAccountModule.outputs.ia_omnisync_id
-    connections_eventhubs_id: logicAppsEhConnectionModule.outputs.connections_eventhubs_id
-    connections_salesforce_id: logicAppsSfConnectionModule.outputs.connections_salesforce_id
+    ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+    connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
   }
 }
 
-module logicAppsSfFabricOrderDetailsModule './logicapps/wf-sf-fabric-orderdetails.bicep' = {
+module logicapps_sf_fabric_orderdetails_module './logicapps/wf_sf_fabric_orderdetails.bicep' = {
   name: 'logicAppsSfFabricOrderDetailsDeployment'
   params: {
     env: env
     location: location
     location_abbreviation: location_abbreviation
     resource_number: resource_number
-    connections_eventhubs_id: logicAppsEhConnectionModule.outputs.connections_eventhubs_id
-    connections_salesforce_id: logicAppsSfConnectionModule.outputs.connections_salesforce_id
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+    connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
   }
 }
 
@@ -143,73 +182,73 @@ module logicAppsSfFabricOrderDetailsModule './logicapps/wf-sf-fabric-orderdetail
 //     location: location
 //     location_abbreviation: location_abbreviation
 //     resource_number: resource_number
-//     connections_eventhubs_id: logicAppsEhConnectionModule.outputs.connections_eventhubs_id
+//     connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
 //   }
 // }
 
-module logicAppsSfFabricPriceBooksModule './logicapps/wf-sf-fabric-pricebooks.bicep' = {
+module logicapps_sf_fabric_pricebooks_module './logicapps/wf_sf_fabric_pricebooks.bicep' = {
   name: 'logicAppsSfFabricPriceBooksDeployment'
   params: {
     env: env
     location: location
     location_abbreviation: location_abbreviation
     resource_number: resource_number
-    connections_eventhubs_id: logicAppsEhConnectionModule.outputs.connections_eventhubs_id
-    connections_salesforce_id: logicAppsSfConnectionModule.outputs.connections_salesforce_id
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+    connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
   }
 }
 
-module logicAppsSfFabricProductsModule './logicapps/wf-sf-fabric-products.bicep' = {
+module logicapps_sf_fabric_products_module './logicapps/wf_sf_fabric_products.bicep' = {
   name: 'logicAppsSfFabricProductsDeployment'
   params: {
     env: env
     location: location
     location_abbreviation: location_abbreviation
     resource_number: resource_number
-    ia_omnisync_id: integrationAccountModule.outputs.ia_omnisync_id
-    connections_eventhubs_id: logicAppsEhConnectionModule.outputs.connections_eventhubs_id
+    ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
   }
 }
 
-module logicAppsSfFabricRetailStoreDeletedModule './logicapps/wf-sf-fabric-retailstore-delete.bicep' = {
+module logicapps_sf_fabric_retailstore_deleted_module './logicapps/wf_sf_fabric_retailstore_delete.bicep' = {
   name: 'logicAppsSfFabricRetailStoreDeletedDeployment'
   params: {
     env: env
     location: location
     location_abbreviation: location_abbreviation
     resource_number: resource_number
-    ia_omnisync_id: integrationAccountModule.outputs.ia_omnisync_id
-    connections_eventhubs_id: logicAppsEhConnectionModule.outputs.connections_eventhubs_id
+    ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
   }
 }
 
-module logicAppsSfFabricRetailStoreInsertModule './logicapps/wf-sf-fabric-retailstore-insert.bicep' = {
+module logicapps_sf_fabric_retailstore_insert_module './logicapps/wf_sf_fabric_retailstore_insert.bicep' = {
   name: 'logicAppsSfFabricRetailStoreInsertDeployment'
   params: {
     env: env
     location: location
     location_abbreviation: location_abbreviation
     resource_number: resource_number
-    ia_omnisync_id: integrationAccountModule.outputs.ia_omnisync_id
-    connections_eventhubs_id: logicAppsEhConnectionModule.outputs.connections_eventhubs_id
-    connections_salesforce_id: logicAppsSfConnectionModule.outputs.connections_salesforce_id
+    ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+    connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
   }
 }
 
-module logicAppsSfFabricRetailStoreUpdateModule './logicapps/wf-sf-fabric-retailstore-update.bicep' = {
+module logicapps_sf_fabric_retailstore_update_module './logicapps/wf_sf_fabric_retailstore_update.bicep' = {
   name: 'logicAppsSfFabricRetailStoreUpdateDeployment'
   params: {
     env: env
     location: location
     location_abbreviation: location_abbreviation
     resource_number: resource_number
-    ia_omnisync_id: integrationAccountModule.outputs.ia_omnisync_id
-    connections_eventhubs_id: logicAppsEhConnectionModule.outputs.connections_eventhubs_id
-    connections_salesforce_id: logicAppsSfConnectionModule.outputs.connections_salesforce_id
+    ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+    connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
   }
 }
 
-module logAnalyticsModule './loganalytics.bicep' = {
+module log_analytics_module './log_analytics.bicep' = {
   name: 'logAnalyticsDeployment'
   params: {
     env: env
@@ -219,7 +258,7 @@ module logAnalyticsModule './loganalytics.bicep' = {
   }
 }
 
-module applicationInsightsModule './applicationinsights.bicep' = {
+module application_insights_module './application_insights.bicep' = {
   name: 'applicationInsightsDeployment'
   params: {
     env: env
@@ -229,17 +268,17 @@ module applicationInsightsModule './applicationinsights.bicep' = {
   }
 }
 
-module eventgridModule './eventgrid.bicep' = {
+module eventgrid_module './event_grid.bicep' = {
   name: 'storageDeployment'
   params: {
     env: env
     location: location
     location_abbreviation: location_abbreviation
     resource_number: resource_number
-    topics_evgt_omnisyncsalesforce_webhook_url_account:logicAppsSfFabricAccountsModule.outputs.wf_sf_fabric_omnisync_accounts_callbackurl
-    topics_evgt_omnisyncsalesforce_webhook_url_product:logicAppsSfFabricProductsModule.outputs.wf_sffabricomnisyncproducts_callbackurl
-    topics_evgt_omnisyncsalesforce_webhook_url_pricebookentry: logicAppsSfFabricPriceBooksModule.outputs.wf_sffabricomnisyncpricebooks_callbackurl
-    topics_evgt_omnisyncsalesforce_webhook_url_orderitem: logicAppsSfFabricOrderDetailsModule.outputs.wf_sffabricomnisyncorderdetails_callbackurl
-    // topics_evgt_omnisyncsalesforce_webhook_url_orderiktem_deleted: logicAppsSfFabricOrderDetailsDeleteModule.outputs.wf_sffabricomnisyncorderdetailsdelete_callbackurl
+    topics_evgt_omnisync_salesforce_webhook_url_account:logicapps_sf_fabric_accounts_module.outputs.wf_sf_fabric_omnisync_accounts_callbackurl
+    topics_evgt_omnisync_salesforce_webhook_url_product:logicapps_sf_fabric_products_module.outputs.wf_sf_fabric_omnisync_products_callbackurl
+    topics_evgt_omnisync_salesforce_webhook_url_pricebookentry: logicapps_sf_fabric_pricebooks_module.outputs.wf_sf_fabric_omnisync_pricebooks_callbackurl
+    topics_evgt_omnisync_salesforce_webhook_url_orderitem: logicapps_sf_fabric_orderdetails_module.outputs.wf_sf_fabric_omnisync_orderdetails_callbackurl
+    // topics_evgt_omnisync_salesforce_webhook_url_orderiktem_deleted: logicAppsSfFabricOrderDetailsDeleteModule.outputs.wf_sf_fabric_omnisync_orderdetails_delete_callbackurl
   }
 }

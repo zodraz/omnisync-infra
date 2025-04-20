@@ -46,7 +46,7 @@ resource evhns_omnisync_rootManageSharedAccessKey 'Microsoft.EventHub/namespaces
   }
 }
 
-resource evh_omnisynccdc 'Microsoft.EventHub/namespaces/eventhubs@2024-05-01-preview' = {
+resource evh_omnisync_cdc 'Microsoft.EventHub/namespaces/eventhubs@2024-05-01-preview' = {
   parent: evhns_omnisync
   name: eh_omnisync_name
   properties: {
@@ -75,8 +75,8 @@ resource evhns_omnisync_networkRuleSets 'Microsoft.EventHub/namespaces/networkru
   }
 }
 
-resource evh_omnisynccdc_eventHubrootKey 'Microsoft.EventHub/namespaces/eventhubs/authorizationrules@2024-05-01-preview' = {
-  parent: evh_omnisynccdc
+resource evh_omnisync_cdc_eventHubrootKey 'Microsoft.EventHub/namespaces/eventhubs/authorizationrules@2024-05-01-preview' = {
+  parent: evh_omnisync_cdc
   name: 'EventHubrootKey'
   properties: {
     rights: [

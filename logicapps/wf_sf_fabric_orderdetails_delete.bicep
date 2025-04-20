@@ -3,12 +3,11 @@ param location_abbreviation string ='ne'
 param resource_number string='01'
 param suffix string = '${env}-${location_abbreviation}-${resource_number}'
 param location string ='northeurope'
-param wf_sffabricomnisyncorderdetails_name string = 'wf-sffabricomnisyncorderdetails-${suffix}'
+param wf_sf_fabric_omnisync_orderdetails_delete_name string = 'wf-sf-fabric-omnisync-orderdetails-delete-${suffix}'
 param connections_eventhubs_id string=''
-param connections_salesforce_id string=''
 
-resource wf_sffabricomnisyncorderdetails 'Microsoft.Logic/workflows@2019-05-01' = {
-  name: wf_sffabricomnisyncorderdetails_name
+resource wf_sf_fabric_omnisync_orderdetails_delete 'Microsoft.Logic/workflows@2019-05-01' = {
+  name: wf_sf_fabric_omnisync_orderdetails_delete_name
   location: location
   properties: {
     state: 'Enabled'
@@ -109,26 +108,17 @@ resource wf_sffabricomnisyncorderdetails 'Microsoft.Logic/workflows@2019-05-01' 
                         }
                       }
                     }
-                    Product2Id: {}
-                    OrderId: {}
-                    PricebookEntryId: {}
-                    OriginalOrderItemId: {}
-                    QuoteLineItemId: {}
-                    AvailableQuantity:{}
-                    Quantity: {}
+                    OwnerId: {}
+                    Name: {}
                     CurrencyIsoCode: {}
-                    UnitPrice: {}
-                    ListPrice: {}
-                    ServiceDate: {}
-                    EndDate: {}
-                    Description: {}
                     CreatedDate: {}
                     CreatedById: {}
-                    LastModifiedDate:{}
+                    LastModifiedDate: {}
                     LastModifiedById: {}
-                    OrderItemNumber: {}
-                    QuantityUnitOfMeasureId: {}
-                    CostPrice__c: {}
+                    Product2Id__c: {}
+                    OrderId__c: {}
+                    OrderItemId__c: {}
+                    OrderItemLineNumber__c: {}
                   }
                 }
               }
@@ -137,34 +127,17 @@ resource wf_sffabricomnisyncorderdetails 'Microsoft.Logic/workflows@2019-05-01' 
         }
         Create_CDC_SalesOrder_record: {
           runAfter: {
-            Get_Order: [
+            Parse_SalesForce_CDC_JSON_record: [
               'Succeeded'
             ]
           }
           type: 'Compose'
           inputs: {
-            Operation: '@{body(\'Parse_SalesForce_CDC_JSON_record\')?[\'payload\']?[\'ChangeEventHeader\']?[\'changeType\']}'
+            Operation: 'Delete'
             Entity: 'SalesOrders'
-            Values: '{ "SalesForceId": " @{first(body(\'Parse_SalesForce_CDC_JSON_record\')?[\'payload\']?[\'ChangeEventHeader\']?[\'recordIds\'])}  ","DateKey": "@{body(\'Get_Order\')[\'EffectiveDate\']}","StoreKey": "@{body(\'Get_Order\')[\'Retail_Store__c\']}","ProductKey": "@{body(\'Parse_SalesForce_CDC_JSON_record\')?[\'payload\']?[\'Product2Id\']}","CurrencyKey": "@{body(\'Get_Order\')[\'CurrencyIsoCode\']}","CustomerKey": "@{body(\'Get_Order\')[\'AccountId\']}","SalesOrderNumber": "@{body(\'Get_Order\')[\'OrderNumber\']}","SalesOrderLineNumber": "@{body(\'Parse_SalesForce_CDC_JSON_record\')?[\'payload\']?[\'OrderItemLineNumber__c\']}","SalesQuantity": "@{body(\'Parse_SalesForce_CDC_JSON_record\')?[\'payload\']?[\'Quantity\']}","SalesAmount": "@{body(\'Parse_SalesForce_CDC_JSON_record\')?[\'payload\']?[\'TotalPrice\']}","TotalCost": "@{body(\'Parse_SalesForce_CDC_JSON_record\')?[\'payload\']?[\'Total_Cost_Price__c\']}","UnitCost": "@{body(\'Parse_SalesForce_CDC_JSON_record\')?[\'payload\']?[\'CostPrice__c\']}","UnitPrice": "@{body(\'Parse_SalesForce_CDC_JSON_record\')?[\'payload\']?[\'UnitPrice\']}","CreatedDate": "@{body(\'Parse_SalesForce_CDC_JSON_record\')?[\'payload\']?[\'CreatedDate\']}","UpdatedDate": "@{body(\'Parse_SalesForce_CDC_JSON_record\')?[\'payload\']?[\'LastModifiedDate\']}"}'
+            Values: '{ "SalesForceId": "@{body(\'Parse_SalesForce_CDC_JSON_record\')?[\'payload\']?[\'OrderItemId__c\']}"}'
             CreatedDate: '@utcNow()'
             UpdatedDate: '@utcNow()'
-          }
-        }
-        Get_Order: {
-          runAfter: {
-            Parse_SalesForce_CDC_JSON_record: [
-              'Succeeded'
-            ]
-          }
-          type: 'ApiConnection'
-          inputs: {
-            host: {
-              connection: {
-                name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
-              }
-            }
-            method: 'get'
-            path: '/v2/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Order\'))}/items/@{encodeURIComponent(encodeURIComponent(body(\'Parse_SalesForce_CDC_JSON_record\')?[\'payload\']?[\'OrderId\']))}'
           }
         }
       }
@@ -178,15 +151,10 @@ resource wf_sffabricomnisyncorderdetails 'Microsoft.Logic/workflows@2019-05-01' 
             connectionId: connections_eventhubs_id
             connectionName: 'eventhubs'
           }
-          salesforce: {
-            id: '/subscriptions/1145166d-1e2c-41f1-a2ca-4325731080ed/providers/Microsoft.Web/locations/northeurope/managedApis/salesforce'
-            connectionId: connections_salesforce_id
-            connectionName: 'salesforce'
-          }
         }
       }
     }
   }
 }
 
-output wf_sffabricomnisyncorderdetails_callbackurl string = listCallbackURL('${wf_sffabricomnisyncorderdetails.id}/triggers/When_a_HTTP_request_is_received', '2019-05-01').value
+output wf_sf_fabric_omnisync_orderdetails_delete_callbackurl string = listCallbackURL('${wf_sf_fabric_omnisync_orderdetails_delete.id}/triggers/When_a_HTTP_request_is_received', '2019-05-01').value

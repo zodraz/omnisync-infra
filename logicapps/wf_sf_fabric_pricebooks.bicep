@@ -3,14 +3,15 @@ param location_abbreviation string ='ne'
 param resource_number string='01'
 param suffix string = '${env}-${location_abbreviation}-${resource_number}'
 param location string ='northeurope'
-param wf_sffabricomnisyncpricebooks_name string = 'wf-sffabricomnisyncpricebooks-${suffix}'
+param wf_sf_fabric_omnisync_pricebooks_name string = 'wf-sf-fabric-omnisync-pricebooks-${suffix}'
 param connections_eventhubs_id string=''
 param connections_salesforce_id string=''
 
-resource wf_sffabricomnisyncpricebooks 'Microsoft.Logic/workflows@2019-05-01' = {
-  name: wf_sffabricomnisyncpricebooks_name
+resource wf_sf_fabric_omnisync_pricebooks 'Microsoft.Logic/workflows@2019-05-01' = {
+  name: wf_sf_fabric_omnisync_pricebooks_name
   location: location
   properties: {
+    state: 'Enabled'
     definition: {
       '$schema': 'https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#'
       contentVersion: '1.0.0.0'
@@ -234,4 +235,4 @@ resource wf_sffabricomnisyncpricebooks 'Microsoft.Logic/workflows@2019-05-01' = 
   }
 }
 
-output wf_sffabricomnisyncpricebooks_callbackurl string = listCallbackURL('${wf_sffabricomnisyncpricebooks.id}/triggers/When_a_HTTP_request_is_received', '2019-05-01').value
+output wf_sf_fabric_omnisync_pricebooks_callbackurl string = listCallbackURL('${wf_sf_fabric_omnisync_pricebooks.id}/triggers/When_a_HTTP_request_is_received', '2019-05-01').value

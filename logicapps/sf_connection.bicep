@@ -5,7 +5,7 @@ resource connections_salesforce 'Microsoft.Web/connections@2016-06-01' = {
   name: connections_salesforce_name
   location: location
   properties: {
-    displayName: 'fakeuser@gmail.com'
+    displayName: 'fakeuser@omnisync.com'
     customParameterValues: {}
     nonSecretParameterValues: {
       salesforceApiVersion: 'v58'

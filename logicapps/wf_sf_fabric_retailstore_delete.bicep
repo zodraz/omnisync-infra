@@ -3,12 +3,12 @@ param location_abbreviation string ='ne'
 param resource_number string='01'
 param suffix string = '${env}-${location_abbreviation}-${resource_number}'
 param location string ='northeurope'
-param wf_sffabricomnisyncretailstoredelete_name string = 'wf-sffabricomnisyncretailstoredelete-${suffix}'
+param wf_sf_fabric_omnisync_retailstore_delete_name string = 'wf-sf-fabric-omnisync-retailstore-delete-${suffix}'
 param ia_omnisync_id string=''
 param connections_eventhubs_id string=''
 
-resource wf_sffabricomnisyncretailstoredelete 'Microsoft.Logic/workflows@2019-05-01' = {
-  name: wf_sffabricomnisyncretailstoredelete_name
+resource wf_sf_fabric_omnisync_retailstore_delete 'Microsoft.Logic/workflows@2019-05-01' = {
+  name: wf_sf_fabric_omnisync_retailstore_delete_name
   location: location
   properties: {
     state: 'Enabled'
@@ -19,6 +19,10 @@ resource wf_sffabricomnisyncretailstoredelete 'Microsoft.Logic/workflows@2019-05
       '$schema': 'https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#'
       contentVersion: '1.0.0.0'
       parameters: {
+        integration_user: {
+          defaultValue: 'integration1@omnisync.com'
+          type: 'String'
+        }
         '$connections': {
           defaultValue: {}
           type: 'Object'
@@ -31,35 +35,6 @@ resource wf_sffabricomnisyncretailstoredelete 'Microsoft.Logic/workflows@2019-05
         }
       }
       actions: {
-        Initialize_notifications: {
-          runAfter: {}
-          type: 'InitializeVariable'
-          inputs: {
-            variables: [
-              {
-                name: 'notifications'
-                type: 'object'
-                value: '@first(xpath(xml(triggerBody()), \'//*[local-name()="notifications"]\'))'
-              }
-            ]
-          }
-        }
-        XML_notifications_Validation: {
-          runAfter: {
-            Initialize_notifications: [
-              'Succeeded'
-            ]
-          }
-          type: 'XmlValidation'
-          inputs: {
-            content: '@variables(\'notifications\')'
-            integrationAccount: {
-              schema: {
-                name: 'OutboundRetailStoreDeletedEvent'
-              }
-            }
-          }
-        }
         Bad_XML_Request: {
           runAfter: {
             XML_notifications_Validation: [
@@ -71,44 +46,6 @@ resource wf_sffabricomnisyncretailstoredelete 'Microsoft.Logic/workflows@2019-05
           inputs: {
             statusCode: 400
             body: 'Request is not a correct XML RetailStore notification. '
-          }
-        }
-        Create_CDC_Store_record: {
-          runAfter: {
-            Parse_XML_notifications_as_JSON: [
-              'Succeeded'
-            ]
-          }
-          type: 'Compose'
-          inputs: {
-            Operation: 'Delete'
-            Entity: 'Store'
-            Values: '{ "SalesForceId": "@{body(\'Parse_XML_notifications_as_JSON\')?[\'notifications\']?[\'Notification\']?[\'sObject\']?[\'sf:DeletedId__c\']}", "StoreCode": "@{body(\'Parse_XML_notifications_as_JSON\')?[\'notifications\']?[\'Notification\']?[\'sObject\']?[\'sf:StoreCode__c\']}", "CreatedDate": "@{body(\'Parse_XML_notifications_as_JSON\')?[\'notifications\']?[\'Notification\']?[\'sObject\']?[\'sf:CreatedDate\']}","UpdatedDate": "@{body(\'Parse_XML_notifications_as_JSON\')?[\'notifications\']?[\'Notification\']?[\'sObject\']?[\'sf:LastModifiedDate\']}"}'
-            CreatedDate: '@utcNow()'
-            UpdatedDate: '@utcNow()'
-          }
-        }
-        Send_CDC_event: {
-          runAfter: {
-            Create_CDC_Store_record: [
-              'Succeeded'
-            ]
-          }
-          type: 'ApiConnection'
-          inputs: {
-            host: {
-              connection: {
-                name: '@parameters(\'$connections\')[\'eventhubs\'][\'connectionId\']'
-              }
-            }
-            method: 'post'
-            body: {
-              ContentData: '@base64(outputs(\'Create_CDC_Store_record\'))'
-            }
-            path: '/@{encodeURIComponent(\'eh-omnisync-prod-ne-01\')}/events'
-            queries: {
-              partitionKey: '0'
-            }
           }
         }
         Parse_XML_notifications_as_JSON: {
@@ -215,6 +152,97 @@ resource wf_sffabricomnisyncretailstoredelete 'Microsoft.Logic/workflows@2019-05
               }
             }
           }
+        }
+        Initialize_notifications: {
+          runAfter: {}
+          type: 'InitializeVariable'
+          inputs: {
+            variables: [
+              {
+                name: 'notifications'
+                type: 'object'
+                value: '@first(xpath(xml(triggerBody()), \'//*[local-name()="notifications"]\'))'
+              }
+            ]
+          }
+        }
+        XML_notifications_Validation: {
+          runAfter: {
+            Initialize_notifications: [
+              'Succeeded'
+            ]
+          }
+          type: 'XmlValidation'
+          inputs: {
+            content: '@variables(\'notifications\')'
+            integrationAccount: {
+              schema: {
+                name: 'OutboundRetailStoreDeletedEvent'
+              }
+            }
+          }
+        }
+        Check_Integration_user: {
+          actions: {}
+          runAfter: {
+            Parse_XML_notifications_as_JSON: [
+              'Succeeded'
+            ]
+          }
+          else: {
+            actions: {
+              Create_CDC_Store_record: {
+                type: 'Compose'
+                inputs: {
+                  Operation: 'Delete'
+                  Entity: 'Store'
+                  Values: '{ "SalesForceId": "@{body(\'Parse_XML_notifications_as_JSON\')?[\'notifications\']?[\'Notification\']?[\'sObject\']?[\'sf:DeletedId__c\']}", "StoreCode": "@{body(\'Parse_XML_notifications_as_JSON\')?[\'notifications\']?[\'Notification\']?[\'sObject\']?[\'sf:StoreCode__c\']}", "CreatedDate": "@{body(\'Parse_XML_notifications_as_JSON\')?[\'notifications\']?[\'Notification\']?[\'sObject\']?[\'sf:CreatedDate\']}","UpdatedDate": "@{body(\'Parse_XML_notifications_as_JSON\')?[\'notifications\']?[\'Notification\']?[\'sObject\']?[\'sf:LastModifiedDate\']}"}'
+                  CreatedDate: '@utcNow()'
+                  UpdatedDate: '@utcNow()'
+                }
+              }
+              Send_CDC_event: {
+                runAfter: {
+                  Create_CDC_Store_record: [
+                    'Succeeded'
+                  ]
+                }
+                type: 'ApiConnection'
+                inputs: {
+                  host: {
+                    connection: {
+                      name: '@parameters(\'$connections\')[\'eventhubs\'][\'connectionId\']'
+                    }
+                  }
+                  method: 'post'
+                  body: {
+                    ContentData: '@base64(outputs(\'Create_CDC_Store_record\'))'
+                  }
+                  path: '/@{encodeURIComponent(\'eh-omnisync-prod-ne-01\')}/events'
+                  queries: {
+                    partitionKey: '0'
+                  }
+                }
+              }
+            }
+          }
+          expression: {
+            or: [
+              {
+                equals: [
+                  '@body(\'Parse_XML_notifications_as_JSON\')?[\'notifications\']?[\'Notification\']?[\'sObject\']?[\'sf:CreatedById\']'
+                  '@parameters(\'integration_user\')'
+                ]
+              }
+              {
+                equals: [
+                  '@body(\'Parse_XML_notifications_as_JSON\')?[\'notifications\']?[\'Notification\']?[\'sObject\']?[\'sf:LastModifiedById\']'
+                  '@parameters(\'integration_user\')'
+                ]
+              }
+            ]
+          }
+          type: 'If'
         }
       }
       outputs: {}

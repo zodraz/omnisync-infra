@@ -1,6 +1,6 @@
 using './main.bicep'
 
-param geoapiSecret = readEnvironmentVariable('geoapiSecret','')
+param geo_api_secret = readEnvironmentVariable('geoapiSecret','')
 param env = readEnvironmentVariable('env','prod')
 param location_abbreviation = readEnvironmentVariable('location_abbreviation','ne')
 param location  = readEnvironmentVariable('location','northeurope')

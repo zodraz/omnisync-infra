@@ -3,11 +3,11 @@ param location_abbreviation string ='ne'
 param resource_number string='01'
 param suffix string = '${env}-${location_abbreviation}-${resource_number}'
 param location string ='northeurope'
-param appi_omnisyncintegration_name string = 'appi-omnisyncintegration-${suffix}'
+param appi_omnisync_integration_name string = 'appi-omnisyncintegration-${suffix}'
 param workspaces_log_omnisync_prod_ne_01_externalid string = '/subscriptions/${subscription().subscriptionId}/resourceGroups/${resourceGroup().name}/providers/Microsoft.OperationalInsights/workspaces/log-omnisync-${suffix}'
 
-resource appi_omnisyncintegration 'microsoft.insights/components@2020-02-02' = {
-  name: appi_omnisyncintegration_name
+resource appi_omnisync_integration 'microsoft.insights/components@2020-02-02' = {
+  name: appi_omnisync_integration_name
   location: location
   kind: 'web'
   properties: {
@@ -23,8 +23,8 @@ resource appi_omnisyncintegration 'microsoft.insights/components@2020-02-02' = {
   }
 }
 
-resource appi_omnisyncintegration_degradationindependencyduration 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  parent: appi_omnisyncintegration
+resource appi_omnisync_integration_degradationindependencyduration 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  parent: appi_omnisync_integration
   name: 'degradationindependencyduration'
   location: location
   properties: {
@@ -44,8 +44,8 @@ resource appi_omnisyncintegration_degradationindependencyduration 'microsoft.ins
   }
 }
 
-resource appi_omnisyncintegration_degradationinserverresponsetime 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  parent: appi_omnisyncintegration
+resource appi_omnisync_integration_degradationinserverresponsetime 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  parent: appi_omnisync_integration
   name: 'degradationinserverresponsetime'
   location: location
   properties: {
@@ -65,8 +65,8 @@ resource appi_omnisyncintegration_degradationinserverresponsetime 'microsoft.ins
   }
 }
 
-resource appi_omnisyncintegration_digestMailConfiguration 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  parent: appi_omnisyncintegration
+resource appi_omnisync_integration_digestMailConfiguration 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  parent: appi_omnisync_integration
   name: 'digestMailConfiguration'
   location: location
   properties: {
@@ -86,8 +86,8 @@ resource appi_omnisyncintegration_digestMailConfiguration 'microsoft.insights/co
   }
 }
 
-resource appi_omnisyncintegration_extension_billingdatavolumedailyspikeextension 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  parent: appi_omnisyncintegration
+resource appi_omnisync_integration_extension_billingdatavolumedailyspikeextension 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  parent: appi_omnisync_integration
   name: 'extension_billingdatavolumedailyspikeextension'
   location: location
   properties: {
@@ -107,8 +107,8 @@ resource appi_omnisyncintegration_extension_billingdatavolumedailyspikeextension
   }
 }
 
-resource appi_omnisyncintegration_extension_canaryextension 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  parent: appi_omnisyncintegration
+resource appi_omnisync_integration_extension_canaryextension 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  parent: appi_omnisync_integration
   name: 'extension_canaryextension'
   location: location
   properties: {
@@ -128,8 +128,8 @@ resource appi_omnisyncintegration_extension_canaryextension 'microsoft.insights/
   }
 }
 
-resource appi_omnisyncintegration_extension_exceptionchangeextension 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  parent: appi_omnisyncintegration
+resource appi_omnisync_integration_extension_exceptionchangeextension 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  parent: appi_omnisync_integration
   name: 'extension_exceptionchangeextension'
   location: location
   properties: {
@@ -149,8 +149,8 @@ resource appi_omnisyncintegration_extension_exceptionchangeextension 'microsoft.
   }
 }
 
-resource appi_omnisyncintegration_extension_memoryleakextension 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  parent: appi_omnisyncintegration
+resource appi_omnisync_integration_extension_memoryleakextension 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  parent: appi_omnisync_integration
   name: 'extension_memoryleakextension'
   location: location
   properties: {
@@ -170,8 +170,8 @@ resource appi_omnisyncintegration_extension_memoryleakextension 'microsoft.insig
   }
 }
 
-resource appi_omnisyncintegration_extension_securityextensionspackage 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  parent: appi_omnisyncintegration
+resource appi_omnisync_integration_extension_securityextensionspackage 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  parent: appi_omnisync_integration
   name: 'extension_securityextensionspackage'
   location: location
   properties: {
@@ -191,8 +191,8 @@ resource appi_omnisyncintegration_extension_securityextensionspackage 'microsoft
   }
 }
 
-resource appi_omnisyncintegration_extension_traceseveritydetector 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  parent: appi_omnisyncintegration
+resource appi_omnisync_integration_extension_traceseveritydetector 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  parent: appi_omnisync_integration
   name: 'extension_traceseveritydetector'
   location: location
   properties: {
@@ -212,8 +212,8 @@ resource appi_omnisyncintegration_extension_traceseveritydetector 'microsoft.ins
   }
 }
 
-resource appi_omnisyncintegration_longdependencyduration 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  parent: appi_omnisyncintegration
+resource appi_omnisync_integration_longdependencyduration 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  parent: appi_omnisync_integration
   name: 'longdependencyduration'
   location: location
   properties: {
@@ -233,8 +233,8 @@ resource appi_omnisyncintegration_longdependencyduration 'microsoft.insights/com
   }
 }
 
-resource appi_omnisyncintegration_migrationToAlertRulesCompleted 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  parent: appi_omnisyncintegration
+resource appi_omnisync_integration_migrationToAlertRulesCompleted 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  parent: appi_omnisync_integration
   name: 'migrationToAlertRulesCompleted'
   location: location
   properties: {
@@ -254,8 +254,8 @@ resource appi_omnisyncintegration_migrationToAlertRulesCompleted 'microsoft.insi
   }
 }
 
-resource appi_omnisyncintegration_slowpageloadtime 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  parent: appi_omnisyncintegration
+resource appi_omnisync_integration_slowpageloadtime 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  parent: appi_omnisync_integration
   name: 'slowpageloadtime'
   location: location
   properties: {
@@ -275,8 +275,8 @@ resource appi_omnisyncintegration_slowpageloadtime 'microsoft.insights/component
   }
 }
 
-resource appi_omnisyncintegration_slowserverresponsetime 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
-  parent: appi_omnisyncintegration
+resource appi_omnisync_integration_slowserverresponsetime 'microsoft.insights/components/ProactiveDetectionConfigs@2018-05-01-preview' = {
+  parent: appi_omnisync_integration
   name: 'slowserverresponsetime'
   location: location
   properties: {
