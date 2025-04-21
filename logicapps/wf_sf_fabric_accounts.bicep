@@ -102,9 +102,6 @@ resource wf_sf_fabric_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' =
                         }
                         changedFields: {
                           type: 'array'
-                          items: {
-                            type: 'string'
-                          }
                         }
                       }
                     }
@@ -113,19 +110,7 @@ resource wf_sf_fabric_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' =
                     RecordTypeId: {}
                     ParentId: {}
                     BillingAddress: {}
-                    ShippingAddress: {
-                      type: 'object'
-                      properties: {
-                        Street: {}
-                        City: {}
-                        State: {}
-                        PostalCode: {}
-                        Country: {}
-                        Latitude: {}
-                        Longitude: {}
-                        GeocodeAccuracy: {}
-                      }
-                    }
+                    ShippingAddress: {}
                     Phone: {}
                     Fax: {}
                     AccountNumber: {}
@@ -158,6 +143,7 @@ resource wf_sf_fabric_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' =
                     cgcloud__Name_2__c: {}
                     cgcloud__Number_Of_Extensions__c: {}
                     SDO_Sales_Closed_Won_Value__c: {}
+                    Sync_Status__c: {}
                   }
                 }
               }
@@ -173,7 +159,7 @@ resource wf_sf_fabric_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' =
                 content: '@json(triggerBody().data.message)'
                 integrationAccount: {
                   map: {
-                    name: 'AccountToCustomerUpdate'
+                    name: 'SalesForceAccountToCustomerUpdate'
                   }
                 }
               }
@@ -214,7 +200,7 @@ resource wf_sf_fabric_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' =
                   content: '@json(triggerBody().data.message)'
                   integrationAccount: {
                     map: {
-                      name: 'AccountToCustomer'
+                      name: 'SalesForceAccountToCustomer'
                     }
                   }
                 }

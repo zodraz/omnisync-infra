@@ -3,7 +3,7 @@ param location_abbreviation string ='ne'
 param resource_number string='01'
 param suffix string = '${env}-${location_abbreviation}-${resource_number}'
 param location string ='northeurope'
-param wf_d365_fabric_omnisync_orderproducts_name string = 'wf-sf-fabric-omnisync-orderdetails-${suffix}'
+param wf_d365_fabric_omnisync_orderproducts_name string = 'wf-d365-fabric-omnisync-orderdetails-${suffix}'
 param connections_eventhubs_id string=''
 param connections_cds_id string=''
 

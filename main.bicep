@@ -145,6 +145,8 @@ module logicapps_sf_d365_accounts_module './logicapps/wf_sf_d365_accounts.bicep'
     location: location
     location_abbreviation: location_abbreviation
     resource_number: resource_number
+    connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
+    connections_sql_id: logicapps_sql_connection_module.outputs.connections_sql_id
     connections_cds_id: logicapps_cds_connection_module.outputs.connections_cds_name_id
   }
 }
