@@ -30,11 +30,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
       }
       actions: {
         Parse_CDC_JSON: {
-          runAfter: {
-            Initialize_CDC_record: [
-              'Succeeded'
-            ]
-          }
+          runAfter: {}
           type: 'ParseJson'
           inputs: {
             content: '@triggerBody().data.message'
@@ -144,14 +140,14 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
           }
           cases: {
             Create: {
-              case: 'Create'
+              case: 'CREATE'
               actions: {
                 Get_Mapped_D365Id_for_Insert: {
                   type: 'ApiConnection'
                   inputs: {
                     host: {
                       connection: {
-                        name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
+                        name: '@parameters(\'$connections\')[\'sql-1\'][\'connectionId\']'
                       }
                     }
                     method: 'post'
@@ -233,8 +229,8 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                     and: [
                       {
                         equals: [
-                          '@lenght(body(\'Get_Mapped_D365Id_for_Insert\'))'
-                          0
+                          '@length(string(body(\'Get_Mapped_D365Id_for_Insert\')?[\'resultsets\']))\r\n\r\n'
+                          2
                         ]
                       }
                     ]
@@ -244,14 +240,14 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
               }
             }
             Update: {
-              case: 'Update'
+              case: 'UPDATE'
               actions: {
                 Get_Mapped_D365Id_for_Update: {
                   type: 'ApiConnection'
                   inputs: {
                     host: {
                       connection: {
-                        name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
+                        name: '@parameters(\'$connections\')[\'sql-1\'][\'connectionId\']'
                       }
                     }
                     method: 'post'
@@ -267,39 +263,68 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                     path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
                   }
                 }
-                Update_an_Account: {
+                'Check_if_Mapping_Customer_(for_Update)_row_exists_': {
+                  actions: {
+                    Update_an_Account: {
+                      type: 'ApiConnection'
+                      inputs: {
+                        host: {
+                          connection: {
+                            name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                          }
+                        }
+                        method: 'patch'
+                        headers: {
+                          prefer: 'return=representation,odata.include-annotations=*'
+                          accept: 'application/json;odata.metadata=full'
+                          organization: 'https://org58211bdf.crm4.dynamics.com'
+                        }
+                        path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'accounts\'))}(@{encodeURIComponent(encodeURIComponent(first(body(\'Get_Mapped_D365Id_for_Update\')?[\'D365\'])))})'
+                      }
+                    }
+                  }
                   runAfter: {
                     Get_Mapped_D365Id_for_Update: [
                       'Succeeded'
                     ]
                   }
-                  type: 'ApiConnection'
-                  inputs: {
-                    host: {
-                      connection: {
-                        name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                  else: {
+                    actions: {
+                      'Response_Account_not_found_(on_Update)': {
+                        type: 'Response'
+                        kind: 'Http'
+                        inputs: {
+                          statusCode: 404
+                          body: 'Account @{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'cgcloud__Account_Number__c\']} - @{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Name\']} to delete not found on Dynamics365'
+                        }
                       }
                     }
-                    method: 'patch'
-                    headers: {
-                      prefer: 'return=representation,odata.include-annotations=*'
-                      accept: 'application/json;odata.metadata=full'
-                      organization: 'https://org58211bdf.crm4.dynamics.com'
-                    }
-                    path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'accounts\'))}(@{encodeURIComponent(encodeURIComponent(first(body(\'Get_Mapped_D365Id_for_Update\')?[\'D365\'])))})'
                   }
+                  expression: {
+                    and: [
+                      {
+                        not: {
+                          equals: [
+                            '@length(string(body(\'Get_Mapped_D365Id_for_Update\')?[\'resultsets\']))'
+                            2
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                  type: 'If'
                 }
               }
             }
             Delete: {
-              case: 'Delete'
+              case: 'DELETE'
               actions: {
                 Get_Mapped_D365Id_for_Delete: {
                   type: 'ApiConnection'
                   inputs: {
                     host: {
                       connection: {
-                        name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
+                        name: '@parameters(\'$connections\')[\'sql-1\'][\'connectionId\']'
                       }
                     }
                     method: 'post'
@@ -315,35 +340,60 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                     path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
                   }
                 }
-                Get_Orders: {
-                  runAfter: {
-                    Get_Mapped_D365Id_for_Delete: [
-                      'Succeeded'
-                    ]
-                  }
-                  type: 'ApiConnection'
-                  inputs: {
-                    host: {
-                      connection: {
-                        name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                'Check_if_Mapping_Customer_(for_Delete)_row_exists': {
+                  actions: {
+                    Get_Orders: {
+                      type: 'ApiConnection'
+                      inputs: {
+                        host: {
+                          connection: {
+                            name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                          }
+                        }
+                        method: 'get'
+                        headers: {
+                          prefer: 'odata.include-annotations=*'
+                          accept: 'application/json;odata.metadata=full'
+                          organization: 'https://org58211bdf.crm4.dynamics.com'
+                        }
+                        path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'salesorders\'))}'
+                        queries: {
+                          '$filter': 'account eq @{first(body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ChangeEventHeader\']?[\'recordIds\'])}'
+                        }
                       }
                     }
-                    method: 'get'
-                    headers: {
-                      prefer: 'odata.include-annotations=*'
-                      accept: 'application/json;odata.metadata=full'
-                      organization: 'https://org58211bdf.crm4.dynamics.com'
+                    For_each_order: {
+                      foreach: '@body(\'Get_Orders\')?[\'value\']'
+                      actions: {
+                        Delete_Order: {
+                          type: 'ApiConnection'
+                          inputs: {
+                            host: {
+                              connection: {
+                                name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                              }
+                            }
+                            method: 'delete'
+                            headers: {
+                              organization: 'https://org58211bdf.crm4.dynamics.com'
+                            }
+                            path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'salesorders\'))}(@{encodeURIComponent(encodeURIComponent(item()?[\'@odata.id\']))})'
+                          }
+                        }
+                      }
+                      runAfter: {
+                        Get_Orders: [
+                          'Succeeded'
+                        ]
+                      }
+                      type: 'Foreach'
                     }
-                    path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'salesorders\'))}'
-                    queries: {
-                      '$filter': 'account eq @{first(body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ChangeEventHeader\']?[\'recordIds\'])}'
-                    }
-                  }
-                }
-                For_each_order: {
-                  foreach: '@body(\'Get_Orders\')?[\'value\']'
-                  actions: {
-                    Delete_Order: {
+                    Delete_Account: {
+                      runAfter: {
+                        For_each_order: [
+                          'Succeeded'
+                        ]
+                      }
                       type: 'ApiConnection'
                       inputs: {
                         host: {
@@ -355,42 +405,55 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                         headers: {
                           organization: 'https://org58211bdf.crm4.dynamics.com'
                         }
-                        path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'salesorders\'))}(@{encodeURIComponent(encodeURIComponent(item()?[\'@odata.id\']))})'
+                        path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'accounts\'))}(@{encodeURIComponent(encodeURIComponent(first(body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ChangeEventHeader\']?[\'recordIds\'])))})'
                       }
                     }
                   }
                   runAfter: {
-                    Get_Orders: [
+                    Get_Mapped_D365Id_for_Delete: [
                       'Succeeded'
                     ]
                   }
-                  type: 'Foreach'
-                }
-                Delete_Account: {
-                  runAfter: {
-                    For_each_order: [
-                      'Succeeded'
-                    ]
-                  }
-                  type: 'ApiConnection'
-                  inputs: {
-                    host: {
-                      connection: {
-                        name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                  else: {
+                    actions: {
+                      'Response_Account_not_found_(on_Delete)': {
+                        type: 'Response'
+                        kind: 'Http'
+                        inputs: {
+                          statusCode: 404
+                          body: 'Account @{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'cgcloud__Account_Number__c\']} - @{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Name\']} to delete not found on Dynamics365'
+                        }
                       }
                     }
-                    method: 'delete'
-                    headers: {
-                      organization: 'https://org58211bdf.crm4.dynamics.com'
-                    }
-                    path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'accounts\'))}(@{encodeURIComponent(encodeURIComponent(first(body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ChangeEventHeader\']?[\'recordIds\'])))})'
                   }
+                  expression: {
+                    and: [
+                      {
+                        not: {
+                          equals: [
+                            '@length(string(body(\'Get_Mapped_D365Id_for_Delete\')?[\'resultsets\']))'
+                            2
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                  type: 'If'
                 }
               }
             }
           }
           default: {
-            actions: {}
+            actions: {
+              Response_Not_Supported: {
+                type: 'Response'
+                kind: 'Http'
+                inputs: {
+                  statusCode: 400
+                  body: 'Operation not supported'
+                }
+              }
+            }
           }
           expression: '@body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ChangeEventHeader\']?[\'changeType\']'
           type: 'Switch'
