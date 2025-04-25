@@ -44,7 +44,7 @@ env:
   AZURE_REGION: ${{ github.event.inputs.AZURE_REGION }}
   ENVIRONMENT_TYPE: ${{ github.event.inputs.ENVIRONMENT_TYPE }}
   RESOURCE_GROUP_NAME: ${{ github.event.inputs.RESOURCE_GROUP_NAME }}
-  BICEP_FILE_PATH: '.main.bicep'
+  BICEP_FILE_PATH: 'main.bicep'
   
 jobs:
   validate_and_deploy:
