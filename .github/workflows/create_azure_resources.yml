@@ -73,7 +73,7 @@ jobs:
         # Specify the script here
         inlineScript: |
           az group create -l ${{ env.AZURE_REGION }} -n ${{ env.RESOURCE_GROUP_NAME }}
-          az deployment group validate -g ${{ env.RESOURCE_GROUP_NAME }} --name OmniSyncBicepDeployment --template-file ./${{ env.BICEP_FILE_PATH }} --parameters environment=${{ env.ENVIRONMENT_TYPE }}
+          az deployment group validate -g ${{ env.RESOURCE_GROUP_NAME }} --name OmniSyncBicepDeployment --template-file ./${{ env.BICEP_FILE_PATH }} --parameters env=${{ env.ENVIRONMENT_TYPE }}
 
     # Build ARM Template from Bicep and create a target Azure resource group  
     - name: Deploy Bicep file ${{ env.BICEP_FILE_PATH }}
@@ -82,7 +82,7 @@ jobs:
       with:
         # Specify the script here
         inlineScript: |
-          az deployment group create -g ${{ env.RESOURCE_GROUP_NAME }} --name OmniSyncBicepDeployment --template-file ./${{ env.BICEP_FILE_PATH }} --parameters environment=${{ env.ENVIRONMENT_TYPE }}
+          az deployment group create -g ${{ env.RESOURCE_GROUP_NAME }} --name OmniSyncBicepDeployment --template-file ./${{ env.BICEP_FILE_PATH }} --parameters env=${{ env.ENVIRONMENT_TYPE }}
 
     # Azure logout
     - name: logout
