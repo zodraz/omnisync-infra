@@ -105,20 +105,20 @@ module logicapps_sql_connection_module './logicapps/sql_connection.bicep' = {
   }
 }
 
-// // // // module logicapps_d365_fabric_orderproducts_module './logicapps/wf_d365_fabric_orderproducts.bicep' = {
-// // // //   name: 'logicAppsD365FabricOrderProductsDeployment'
-// // // //   params: {
-// // // //     env: env
-// // // //     location: location
-// // // //     location_abbreviation: location_abbreviation
-// // // //     resource_number: resource_number
-// // // //     connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
-// // // //     connections_cds_id: logicapps_cds_connection_module.outputs.connections_cds_name_id
-// // // //   }
-// // // // }
+// // module logicapps_d365_fabric_orderproducts_module './logicapps/wf_d365_fabric_orderproducts.bicep' = {
+// //   name: 'logicAppsD365FabricOrderProductsDeployment'
+// //   params: {
+// //     env: env
+// //     location: location
+// //     location_abbreviation: location_abbreviation
+// //     resource_number: resource_number
+// //     connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+// //     connections_cds_id: logicapps_cds_connection_module.outputs.connections_cds_name_id
+// //   }
+// // }
 
-module logicapps_d365_sf_accounts_module './logicapps/wf_d365_accounts.bicep' = {
-  name: 'logicAppsD365AccountsDeployment'
+module logicapps_d365_sf_accounts_delete_module './logicapps/wf_d365_accounts_delete.bicep' = {
+  name: 'logicAppsD365AccountsDeleteDeployment'
   params: {
     env: env
     location: location
@@ -135,68 +135,115 @@ module logicapps_d365_sf_accounts_module './logicapps/wf_d365_accounts.bicep' = 
   }
 }
 
-// // // // module logicapps_sf_d365_accounts_module './logicapps/wf_sf_d365_accounts.bicep' = {
-// // // //   name: 'logicAppsSfD365AccountsDeployment'
-// // // //   params: {
-// // // //     env: env
-// // // //     location: location
-// // // //     location_abbreviation: location_abbreviation
-// // // //     resource_number: resource_number
-// // // //     connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
-// // // //     connections_sql_id: logicapps_sql_connection_module.outputs.connections_sql_id
-// // // //     connections_cds_id: logicapps_cds_connection_module.outputs.connections_cds_name_id
-// // // //   }
-// // // // }
+module logicapps_d365_sf_accounts_insert_module './logicapps/wf_d365_accounts_insert.bicep' = {
+  name: 'logicAppsD365AccountsInsertDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
+    connections_sql_id: logicapps_sql_connection_module.outputs.connections_sql_id
+    connections_cds_id: logicapps_cds_connection_module.outputs.connections_cds_name_id
+    d365_organization: d365_organization
+    integration_user: integration_user
+    database: database
+    sql_connection_string: sql_connection_string
+  }
+}
 
-// // // // module logicapps_sf_fabric_accounts_module './logicapps/wf_sf_fabric_accounts.bicep' = {
-// // // //   name: 'logicAppsSfFabricAccountsDeployment'
-// // // //   params: {
-// // // //     env: env
-// // // //     location: location
-// // // //     location_abbreviation: location_abbreviation
-// // // //     resource_number: resource_number
-// // // //     ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
-// // // //     connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
-// // // //   }
-// // // // }
+module logicapps_d365_sf_accounts_update_module './logicapps/wf_d365_accounts_update.bicep' = {
+  name: 'logicAppsD365AccountsUpdateDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
+    connections_sql_id: logicapps_sql_connection_module.outputs.connections_sql_id
+    connections_cds_id: logicapps_cds_connection_module.outputs.connections_cds_name_id
+    d365_organization: d365_organization
+    integration_user: integration_user
+    database: database
+    sql_connection_string: sql_connection_string
+  }
+}
 
-// // // // module logicapps_sf_fabric_currencytype_insert_module './logicapps/wf_sf_fabric_currencytype_insert.bicep' = {
-// // // //   name: 'logicAppsSfFabricCurrencyTypeInsertDeployment'
-// // // //   params: {
-// // // //     env: env
-// // // //     location: location
-// // // //     location_abbreviation: location_abbreviation
-// // // //     resource_number: resource_number
-// // // //     ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
-// // // //     connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
-// // // //     connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
-// // // //   }
-// // // // }
+// module logicapps_d365_sf_accounts_module './logicapps/wf_d365_fabric_orderproducts.bicep' = {
+//   name: 'logicAppsD365FabricOrderProductsDeployment'
+//   params: {
+//     env: env
+//     location: location
+//     location_abbreviation: location_abbreviation
+//     resource_number: resource_number
+//     // ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+//     // connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
+//     // connections_sql_id: logicapps_sql_connection_module.outputs.connections_sql_id
+//     // connections_cds_id: logicapps_cds_connection_module.outputs.connections_cds_name_id
+//     // d365_organization: d365_organization
+//     // integration_user: integration_user
+//     // database: database
+//     // sql_connection_string: sql_connection_string
+//   }
+// }
 
-// // // // module logicapps_sf_fabric_currencytype_update_module './logicapps/wf_sf_fabric_currencytype_update.bicep' = {
-// // // //   name: 'logicAppsSfFabricCurrencyTypeUpdateDeployment'
-// // // //   params: {
-// // // //     env: env
-// // // //     location: location
-// // // //     location_abbreviation: location_abbreviation
-// // // //     resource_number: resource_number
-// // // //     ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
-// // // //     connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
-// // // //     connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
-// // // //   }
-// // // // }
+module logicapps_sf_d365_accounts_module './logicapps/wf_sf_d365_accounts.bicep' = {
+  name: 'logicAppsSfD365AccountsDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    // ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
+    connections_sql_id: logicapps_sql_connection_module.outputs.connections_sql_id
+    connections_cds_id: logicapps_cds_connection_module.outputs.connections_cds_name_id
+    // d365_organization: d365_organization
+    // integration_user: integration_user
+    // database: database
+    // sql_connection_string: sql_connection_string
+  }
+}
 
-// // // // module logicapps_sf_fabric_orderdetails_module './logicapps/wf_sf_fabric_orderdetails.bicep' = {
-// // // //   name: 'logicAppsSfFabricOrderDetailsDeployment'
-// // // //   params: {
-// // // //     env: env
-// // // //     location: location
-// // // //     location_abbreviation: location_abbreviation
-// // // //     resource_number: resource_number
-// // // //     connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
-// // // //     connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
-// // // //   }
-// // // // }
+module logicapps_sf_fabric_accounts_module './logicapps/wf_sf_fabric_accounts.bicep' = {
+  name: 'logicAppsSfFabricAccountsDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+  }
+}
+
+module logicapps_sf_fabric_currencytype_insert_module './logicapps/wf_sf_fabric_currencytype_insert.bicep' = {
+  name: 'logicAppsSfFabricCurrencyTypeInsertDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+    connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
+  }
+}
+
+module logicapps_sf_fabric_currencytype_update_module './logicapps/wf_sf_fabric_currencytype_update.bicep' = {
+  name: 'logicAppsSfFabricCurrencyTypeUpdateDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+    connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
+  }
+}
 
 // module logicAppsSfFabricOrderDetailsDeleteModule './logicapps/wf-sf-fabric-orderdetails-delete.bicep' = {
 //   name: 'logicAppsSfFabricOrderDetailsDeleteDeployment'
@@ -208,68 +255,79 @@ module logicapps_d365_sf_accounts_module './logicapps/wf_d365_accounts.bicep' = 
 //     connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
 //   }
 // }
+module logicapps_sf_fabric_orderdetails_module './logicapps/wf_sf_fabric_orderdetails.bicep' = {
+  name: 'logicAppsSfFabricOrderDetailsDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+    connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
+  }
+}
 
-// // // // module logicapps_sf_fabric_pricebooks_module './logicapps/wf_sf_fabric_pricebooks.bicep' = {
-// // // //   name: 'logicAppsSfFabricPriceBooksDeployment'
-// // // //   params: {
-// // // //     env: env
-// // // //     location: location
-// // // //     location_abbreviation: location_abbreviation
-// // // //     resource_number: resource_number
-// // // //     connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
-// // // //     connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
-// // // //   }
-// // // // }
+module logicapps_sf_fabric_pricebooks_module './logicapps/wf_sf_fabric_pricebooks.bicep' = {
+  name: 'logicAppsSfFabricPriceBooksDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+    connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
+  }
+}
 
-// // // // module logicapps_sf_fabric_products_module './logicapps/wf_sf_fabric_products.bicep' = {
-// // // //   name: 'logicAppsSfFabricProductsDeployment'
-// // // //   params: {
-// // // //     env: env
-// // // //     location: location
-// // // //     location_abbreviation: location_abbreviation
-// // // //     resource_number: resource_number
-// // // //     ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
-// // // //     connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
-// // // //   }
-// // // // }
+module logicapps_sf_fabric_products_module './logicapps/wf_sf_fabric_products.bicep' = {
+  name: 'logicAppsSfFabricProductsDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+  }
+}
 
-// // // // module logicapps_sf_fabric_retailstore_delete_module './logicapps/wf_sf_fabric_retailstore_delete.bicep' = {
-// // // //   name: 'logicAppsSfFabricRetailStoreDeleteDeployment'
-// // // //   params: {
-// // // //     env: env
-// // // //     location: location
-// // // //     location_abbreviation: location_abbreviation
-// // // //     resource_number: resource_number
-// // // //     ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
-// // // //     connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
-// // // //   }
-// // // // }
+module logicapps_sf_fabric_retailstore_delete_module './logicapps/wf_sf_fabric_retailstore_delete.bicep' = {
+  name: 'logicAppsSfFabricRetailStoreDeleteDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+  }
+}
 
-// // // // module logicapps_sf_fabric_retailstore_insert_module './logicapps/wf_sf_fabric_retailstore_insert.bicep' = {
-// // // //   name: 'logicAppsSfFabricRetailStoreInsertDeployment'
-// // // //   params: {
-// // // //     env: env
-// // // //     location: location
-// // // //     location_abbreviation: location_abbreviation
-// // // //     resource_number: resource_number
-// // // //     ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
-// // // //     connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
-// // // //     connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
-// // // //   }
-// // // // }
+module logicapps_sf_fabric_retailstore_insert_module './logicapps/wf_sf_fabric_retailstore_insert.bicep' = {
+  name: 'logicAppsSfFabricRetailStoreInsertDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+    connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
+  }
+}
 
-// // // // module logicapps_sf_fabric_retailstore_update_module './logicapps/wf_sf_fabric_retailstore_update.bicep' = {
-// // // //   name: 'logicAppsSfFabricRetailStoreUpdateDeployment'
-// // // //   params: {
-// // // //     env: env
-// // // //     location: location
-// // // //     location_abbreviation: location_abbreviation
-// // // //     resource_number: resource_number
-// // // //     ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
-// // // //     connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
-// // // //     connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
-// // // //   }
-// // // // }
+module logicapps_sf_fabric_retailstore_update_module './logicapps/wf_sf_fabric_retailstore_update.bicep' = {
+  name: 'logicAppsSfFabricRetailStoreUpdateDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
+    connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
+    connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
+  }
+}
 
 module log_analytics_module './log_analytics.bicep' = {
   name: 'logAnalyticsDeployment'
@@ -291,18 +349,18 @@ module application_insights_module './application_insights.bicep' = {
   }
 }
 
-// // // // module eventgrid_module './event_grid.bicep' = {
-// // // //   name: 'storageDeployment'
-// // // //   params: {
-// // // //     env: env
-// // // //     location: location
-// // // //     location_abbreviation: location_abbreviation
-// // // //     resource_number: resource_number
-// // // //     topics_evgt_omnisync_salesforce_fabric_webhook_url_account:logicapps_sf_fabric_accounts_module.outputs.wf_sf_fabric_omnisync_accounts_callbackurl
-// // // //     topics_evgt_omnisync_salesforce_fabric_webhook_url_product:logicapps_sf_fabric_products_module.outputs.wf_sf_fabric_omnisync_products_callbackurl
-// // // //     topics_evgt_omnisync_salesforce_fabric_webhook_url_pricebookentry: logicapps_sf_fabric_pricebooks_module.outputs.wf_sf_fabric_omnisync_pricebooks_callbackurl
-// // // //     topics_evgt_omnisync_salesforce_fabric_webhook_url_orderitem: logicapps_sf_fabric_orderdetails_module.outputs.wf_sf_fabric_omnisync_orderdetails_callbackurl
-// // // //     // topics_evgt_omnisync_salesforce_webhook_url_orderiktem_deleted: logicAppsSfFabricOrderDetailsDeleteModule.outputs.wf_sf_fabric_omnisync_orderdetails_delete_callbackurl
-// // // //     topics_evgt_omnisync_salesforce_d365_webhook_url_account: logicapps_sf_d365_accounts_module.outputs.wf_sf_d365_omnisync_accounts_callbackurl
-// // // //   }
-// // // // }
+module eventgrid_module './event_grid.bicep' = {
+  name: 'storageDeployment'
+  params: {
+    env: env
+    location: location
+    location_abbreviation: location_abbreviation
+    resource_number: resource_number
+    topics_evgt_omnisync_salesforce_fabric_webhook_url_account:logicapps_sf_fabric_accounts_module.outputs.wf_sf_fabric_omnisync_accounts_callbackurl
+    topics_evgt_omnisync_salesforce_fabric_webhook_url_product:logicapps_sf_fabric_products_module.outputs.wf_sf_fabric_omnisync_products_callbackurl
+    topics_evgt_omnisync_salesforce_fabric_webhook_url_pricebookentry: logicapps_sf_fabric_pricebooks_module.outputs.wf_sf_fabric_omnisync_pricebooks_callbackurl
+    topics_evgt_omnisync_salesforce_fabric_webhook_url_orderitem: logicapps_sf_fabric_orderdetails_module.outputs.wf_sf_fabric_omnisync_orderdetails_callbackurl
+    // topics_evgt_omnisync_salesforce_webhook_url_orderiktem_deleted: logicAppsSfFabricOrderDetailsDeleteModule.outputs.wf_sf_fabric_omnisync_orderdetails_delete_callbackurl
+    topics_evgt_omnisync_salesforce_d365_webhook_url_account: logicapps_sf_d365_accounts_module.outputs.wf_sf_d365_omnisync_accounts_callbackurl
+  }
+}

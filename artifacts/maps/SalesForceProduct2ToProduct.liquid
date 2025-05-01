@@ -2,12 +2,12 @@
    "Operation": "{{ content.payload.ChangeEventHeader.changeType | capitalize }}",
    "Entity": "Product",
    "Values": "{				
-				\"ProductCode\": \"{{ content.payload.cgcloud__Consumer_Goods_Product_Code__c }}\",			
+				\"ProductCode\": \"{{ content.payload.ProductCode }}\",			
 				\"ProductName\": \"{{ content.payload.Name }}\",
-				\"ProductDescription\": \"{{ content.payload.cgcloud__Description_1_Language_1__c }}\",
-				\"ProductSubcategoryKey\": \"{{ content.payload.CategoryId__c }}\",
+				\"ProductDescription\": \"{{ content.payload.Description }}\",
+				\"ProductSubcategoryKey\": \"{{ content.payload.FamilyId__c }}\",
 				\"CurrencyKey\": \"{{ content.payload.CurrencyIsoCode }}\",
-				\"Manufacturer\": \"{{ content.payload.cgcloud__Manufacturer__c }}\",
+				\"Manufacturer\": \"{{ content.payload.Manufacturer__c }}\",
 				\"BrandName\": \"{{ content.payload.Brand__c }}\",
 				\"ClassName\": \"{{ content.payload.Class__c }}\",
 				{%- if content.payload.Class__c == "Economy" -%}
@@ -21,7 +21,7 @@
 				{% endif %}
 				\"ColorID\": \"{{ content.payload.ColorId__c }}\",
 				\"ColorName\": \"{{ content.payload.Color__c }}\",
-				\"Size\": \"{{ content.payload.cgcloud__Size__c }}\",
+				\"Size\": \"{{ content.payload.Size__c }}\",
 				{% if content.payload.SizeUnitOfMeasure__c == "meters" %}
 					\"SizeUnitMeasureID\": 1,
 				{% elsif content.payload.SizeUnitOfMeasure__c == "centimeters" %}
@@ -38,7 +38,7 @@
 					\"SizeUnitMeasureID\": -1,
 				{% endif %}
 				\"SizeUnitMeasureName\": \"{{ content.payload.SizeUnitOfMeasure__c }}\",
-				\"Weight\": \"{{ content.payload.cgcloud__Weight__c }}\",
+				\"Weight\": \"{{ content.payload.Weight__c }}\",
 				\"WeightUnitMeasureID\": \"{{ content.payload.WeightUnitOfMeasureId__c }}\",
 				\"WeightUnitMeasureName\": \"{{ content.payload.WeightUnitOfMeasure__c }}\",
 				\"AvailableForSaleDate\": \"{{ content.payload.AvailableForSaleDate__c }}\",

@@ -112,56 +112,37 @@ resource wf_sf_fabric_omnisync_products 'Microsoft.Logic/workflows@2019-05-01' =
                         }
                       }
                     }
-                    Name: {}
-                    Type: {}
-                    RecordTypeId: {}
-                    ParentId: {}
-                    BillingAddress: {}
-                    ShippingAddress: {
-                      type: 'object'
-                      properties: {
-                        Street: {}
-                        City: {}
-                        State: {}
-                        PostalCode: {}
-                        Country: {}
-                        Latitude: {}
-                        Longitude: {}
-                        GeocodeAccuracy: {}
-                      }
-                    }
-                    Phone: {}
-                    Fax: {}
-                    AccountNumber: {}
-                    Website: {}
-                    Sic: {}
-                    Industry: {}
-                    AnnualRevenue: {}
-                    NumberOfEmployees: {}
-                    Ownership: {}
-                    TickerSymbol: {}
-                    Description: {}
-                    Rating: {}
-                    Site: {}
-                    CurrencyIsoCode: {}
-                    OwnerId: {}
-                    CreatedDate: {}
+                    IsActive: {}
+                    AvailableForSaleDate__c: {}
+                    Brand__c: {}
+                    Class__c: {}
+                    ClassId__c: {}
+                    Color__c: {}
+                    ColorId__c: {}
                     CreatedById: {}
-                    LastModifiedDate: {}
+                    DisplayUrl: {}
+                    ExternalId: {}
+                    FamilyId__c: {}
                     LastModifiedById: {}
-                    SourceSystemIdentifier: {}
-                    Jigsaw: {}
-                    JigsawCompanyId: {}
-                    productsource: {}
-                    SicDesc: {}
-                    OperatingHoursId: {}
-                    cgcloud__Account_Email__c: {}
-                    cgcloud__Account_Number__c: {}
-                    cgcloud__Account_Template__c: {}
-                    cgcloud__ExternalId__c: {}
-                    cgcloud__Name_2__c: {}
-                    cgcloud__Number_Of_Extensions__c: {}
-                    SDO_Sales_Closed_Won_Value__c: {}
+                    Manufacturer__c: {}
+                    ProductClass: {}
+                    ProductCode: {}
+                    CurrencyIsoCode: {}
+                    Description: {}
+                    Family: {}
+                    Name: {}
+                    StockKeepingUnit: {}
+                    Type: {}
+                    SellerId: {}
+                    Size__c: {}
+                    SizeUnitOfMeasure__c: {}
+                    SizeUnitOfMeasureId__c: {}
+                    SourceProductId: {}
+                    StopSaleDate__c: {}
+                    SyncStatus__c: {}
+                    Weight__c: {}
+                    WeightUnitOfMeasure__c: {}
+                    WeightUnitOfMeasureId__c: {}
                   }
                 }
               }
@@ -342,56 +323,37 @@ resource wf_sf_fabric_omnisync_products 'Microsoft.Logic/workflows@2019-05-01' =
                         }
                       }
                     }
-                    Name: {}
-                    Type: {}
-                    RecordTypeId: {}
-                    ParentId: {}
-                    BillingAddress: {}
-                    ShippingAddress: {
-                      type: 'object'
-                      properties: {
-                        Street: {}
-                        City: {}
-                        State: {}
-                        PostalCode: {}
-                        Country: {}
-                        Latitude: {}
-                        Longitude: {}
-                        GeocodeAccuracy: {}
-                      }
-                    }
-                    Phone: {}
-                    Fax: {}
-                    AccountNumber: {}
-                    Website: {}
-                    Sic: {}
-                    Industry: {}
-                    AnnualRevenue: {}
-                    NumberOfEmployees: {}
-                    Ownership: {}
-                    TickerSymbol: {}
-                    Description: {}
-                    Rating: {}
-                    Site: {}
-                    CurrencyIsoCode: {}
-                    OwnerId: {}
-                    CreatedDate: {}
+                    IsActive: {}
+                    AvailableForSaleDate__c: {}
+                    Brand__c: {}
+                    Class__c: {}
+                    ClassId__c: {}
+                    Color__c: {}
+                    ColorId__c: {}
                     CreatedById: {}
-                    LastModifiedDate: {}
+                    DisplayUrl: {}
+                    ExternalId: {}
+                    FamilyId__c: {}
                     LastModifiedById: {}
-                    SourceSystemIdentifier: {}
-                    Jigsaw: {}
-                    JigsawCompanyId: {}
-                    productsource: {}
-                    SicDesc: {}
-                    OperatingHoursId: {}
-                    cgcloud__Account_Email__c: {}
-                    cgcloud__Account_Number__c: {}
-                    cgcloud__Account_Template__c: {}
-                    cgcloud__ExternalId__c: {}
-                    cgcloud__Name_2__c: {}
-                    cgcloud__Number_Of_Extensions__c: {}
-                    SDO_Sales_Closed_Won_Value__c: {}
+                    Manufacturer__c: {}
+                    ProductClass: {}
+                    ProductCode: {}
+                    CurrencyIsoCode: {}
+                    Description: {}
+                    Family: {}
+                    Name: {}
+                    StockKeepingUnit: {}
+                    Type: {}
+                    SellerId: {}
+                    Size__c: {}
+                    SizeUnitOfMeasure__c: {}
+                    SizeUnitOfMeasureId__c: {}
+                    SourceProductId: {}
+                    StopSaleDate__c: {}
+                    SyncStatus__c: {}
+                    Weight__c: {}
+                    WeightUnitOfMeasure__c: {}
+                    WeightUnitOfMeasureId__c: {}
                   }
                 }
               }

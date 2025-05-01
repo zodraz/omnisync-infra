@@ -3,7 +3,7 @@ param location_abbreviation string ='ne'
 param resource_number string='01'
 param suffix string = '${env}-${location_abbreviation}-${resource_number}'
 param location string ='northeurope'
-param wf_d365_omnisync_accounts_name string = 'wf-d365-omnisyncinc-accounts-v1-${suffix}'
+param wf_d365_omnisync_accounts_update_name string = 'wf-d365-omnisyncinc-accounts-update-${suffix}'
 param ia_omnisync_id string=''
 param connections_salesforce_id string=''
 param connections_sql_id string=''
@@ -13,8 +13,8 @@ param integration_user string=''
 param database string =''
 param sql_connection_string string = ''
 
-resource wf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
-  name: wf_d365_omnisync_accounts_name
+resource wf_d365_omnisync_accounts_update 'Microsoft.Logic/workflows@2019-05-01' = {
+  name: wf_d365_omnisync_accounts_update_name
   location: location
   properties: {
     state: 'Enabled'
@@ -26,7 +26,7 @@ resource wf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
       contentVersion: '1.0.0.0'
       parameters: {
         integration_user: {
-          defaultValue: integration_user
+          defaultValue: 'b4c42b2a-181e-f011-9989-002248a3370c'
           type: 'String'
         }
         '$connections': {
@@ -51,7 +51,7 @@ resource wf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
               url: '@listCallbackUrl()'
             }
             headers: {
-              organization: 'https://${d365_organization}.crm4.dynamics.com'
+              organization: 'https://org58211bdf.crm4.dynamics.com'
               Consistency: 'Strong'
               catalog: 'all'
               category: 'all'
@@ -104,8 +104,7 @@ resource wf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                                 AnnualRevenue: '@triggerBody()?[\'revenue\']'
                                 NumberOfEmployees: '@triggerBody()?[\'numberofemployees\']'
                                 CurrencyIsoCode: '@triggerBody()?[\'_transactioncurrencyid_value@Microsoft.Dynamics.CRM.lookuplogicalname\']'
-                                cgcloud__Account_Email__c: '@triggerBody()?[\'emailaddress1\']'
-                                cgcloud__Account_Number__c: '@triggerBody()?[\'accountnumber\']'
+                                Email__c: '@triggerBody()?[\'emailaddress1\']'
                               }
                               path: '/v2/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items'
                             }
@@ -133,7 +132,7 @@ resource wf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                                 headers: {
                                   prefer: 'return=representation,odata.include-annotations=*'
                                   accept: 'application/json;odata.metadata=full'
-                                  organization: 'https://${d365_organization}.crm4.dynamics.com'
+                                  organization: 'https://org58211bdf.crm4.dynamics.com'
                                 }
                                 path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'accounts\'))}(@{encodeURIComponent(encodeURIComponent(triggerBody()?[\'accountid\']))})'
                               }
@@ -162,7 +161,7 @@ resource wf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                           }
                           method: 'post'
                           body: {
-                            query: 'SELECT * \nFROM ${database}.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Customer\''
+                            query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Customer\''
                             formalParameters: {
                               Name: 'NVARCHAR(100)'
                             }
@@ -170,7 +169,7 @@ resource wf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                               Name: '@triggerBody()?[\'accountnumber\']'
                             }
                           }
-                          path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'${sql_connection_string}\'))},@{encodeURIComponent(encodeURIComponent(\'${database}\'))}/query/sql'
+                          path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
                         }
                       }
                     }
@@ -188,7 +187,7 @@ resource wf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                           }
                           method: 'post'
                           body: {
-                            query: 'SELECT * \nFROM ${database}.dbo.MasterDataMapping\nWHERE D365Id=@D365Id AND Entity=\'Customer\''
+                            query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE D365Id=@D365Id AND Entity=\'Customer\''
                             formalParameters: {
                               D365Id: 'NVARCHAR(100)'
                             }
@@ -196,7 +195,7 @@ resource wf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                               D365Id: '@triggerBody()?[\'accountid\']'
                             }
                           }
-                          path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'${sql_connection_string}\'))},@{encodeURIComponent(encodeURIComponent(\'${database}\'))}/query/sql'
+                          path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
                         }
                       }
                       'Check_if_Mapping_Customer_(for_Update)_row_exists_': {
@@ -228,8 +227,7 @@ resource wf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                                 NumberOfEmployees: '@triggerBody()?[\'numberofemployees\']'
                                 Description: '@triggerBody()?[\'description\']'
                                 CurrencyIsoCode: '@triggerBody()?[\'_transactioncurrencyid_value@Microsoft.Dynamics.CRM.lookuplogicalname\']'
-                                cgcloud__Account_Email__c: '@triggerBody()?[\'emailaddress1\']'
-                                cgcloud__Account_Number__c: '@triggerBody()?[\'accountnumber\']'
+                                Email__c: '@triggerBody()?[\'emailaddress1\']'
                               }
                               path: '/v3/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items/@{encodeURIComponent(encodeURIComponent(first(body(\'Get_Mapped_SalesForceId_for_Update\'))?[\'SalesForceId\']))}'
                             }
@@ -281,7 +279,7 @@ resource wf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                           }
                           method: 'post'
                           body: {
-                            query: 'SELECT * \nFROM ${database}.dbo.MasterDataMapping\nWHERE D365Id=@D365Id AND Entity=\'Customer\''
+                            query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE D365Id=@D365Id AND Entity=\'Customer\''
                             formalParameters: {
                               D365Id: 'NVARCHAR(100)'
                             }
@@ -289,7 +287,7 @@ resource wf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                               D365Id: '@triggerBody()?[\'accountid\']'
                             }
                           }
-                          path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'${sql_connection_string}\'))},@{encodeURIComponent(encodeURIComponent(\'${database}\'))}/query/sql'
+                          path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
                         }
                       }
                       'Check_if_Mapping_Customer_(for_Delete)_row_exists_': {
@@ -445,7 +443,7 @@ resource wf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                 headers: {
                   prefer: 'odata.include-annotations=*'
                   accept: 'application/json;odata.metadata=full'
-                  organization: 'https://${d365_organization}.crm4.dynamics.com'
+                  organization: 'https://org58211bdf.crm4.dynamics.com'
                 }
                 path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'audits\'))}'
                 queries: {

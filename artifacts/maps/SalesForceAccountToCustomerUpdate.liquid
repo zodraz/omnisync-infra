@@ -4,12 +4,12 @@
    "Operation": "{{ content.payload.ChangeEventHeader.changeType | capitalize }}",
    "Entity": "Customer",
    "Values": "{
-				\"CustomerCode\": \"{{ content.payload.cgcloud__Account_Number__c }}\",				
+				\"CustomerCode\": \"{{ content.payload.AccountNumber }}\",				
 				{%- for changedField in changedFields -%}
 					{% if changedField == "Name" %}
 						\"CompanyName\": \"{{ content.payload.Name }}\",
-					{% elsif changedField == "cgcloud__Account_Email__c" %}
-						\"EmailAddress\": \"{{ content.payload.cgcloud__Account_Email__c }}\",
+					{% elsif changedField == "Email__c" %}
+						\"EmailAddress\": \"{{ content.payload.Email__c }}\",
 					{% elsif changedField == "Phone" %}
 						\"Phone\": \"{{ content.payload.Phone }}\",
 					{% elsif changedField == "LastModifiedDate" %}

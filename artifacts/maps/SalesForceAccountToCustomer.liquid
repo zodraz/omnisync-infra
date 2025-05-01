@@ -2,9 +2,9 @@
    "Operation": "{{ content.payload.ChangeEventHeader.changeType | capitalize }}",
    "Entity": "Customer",
    "Values": "{	
-				\"CustomerCode\": \"{{ content.payload.cgcloud__Account_Number__c }}\",					
+				\"CustomerCode\": \"{{ content.payload.AccountNumber }}\",					
 				\"CompanyName\": \"{{ content.payload.Name }}\",
-				\"EmailAddress\": \"{{ content.payload.cgcloud__Account_Email__c }}\",
+				\"EmailAddress\": \"{{ content.payload.Email__c }}\",
 				\"Phone\": \"{{ content.payload.Phone }}\",
 				\"CreatedDate\": \"{{ content.payload.CreatedDate }}\",
 				\"UpdatedDate\": \"{{ content.payload.LastModifiedDate }}\",

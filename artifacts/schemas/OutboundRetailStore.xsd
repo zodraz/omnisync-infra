@@ -22,7 +22,7 @@
     <complexType name="RetailStoreNotification">
       <sequence>
         <element name="Id" type="ent:ID"/>
-        <element name="sObject" type="ens:RetailStore"/>
+        <element name="sObject" type="ens:RetailStore__c"/>
       </sequence>
     </complexType>
     <!-- <element name="notificationsResponse"> -->

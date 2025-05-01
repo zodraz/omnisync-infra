@@ -118,13 +118,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                     AccountSource: {}
                     SicDesc: {}
                     OperatingHoursId: {}
-                    cgcloud__Account_Email__c: {}
-                    cgcloud__Account_Number__c: {}
-                    cgcloud__Account_Template__c: {}
-                    cgcloud__ExternalId__c: {}
-                    cgcloud__Name_2__c: {}
-                    cgcloud__Number_Of_Extensions__c: {}
-                    SDO_Sales_Closed_Won_Value__c: {}
+                    Email__c: {}
                     Sync_Status__c: {}
                   }
                 }
@@ -147,7 +141,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                   inputs: {
                     host: {
                       connection: {
-                        name: '@parameters(\'$connections\')[\'sql-1\'][\'connectionId\']'
+                        name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
                       }
                     }
                     method: 'post'
@@ -157,7 +151,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                         Name: 'NVARCHAR(100)'
                       }
                       actualParameters: {
-                        Name: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'cgcloud__Account_Number__c\']}'
+                        Name: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'AccountNumber\']}'
                       }
                     }
                     path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
@@ -176,7 +170,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                         method: 'post'
                         body: {
                           name: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Name\']}'
-                          accountnumber: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'cgcloud__Account_Number__c\']}'
+                          accountnumber: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'AccountNumber\']}'
                           address1_city: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'City\']}'
                           address1_line1: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'Street\']}'
                           address1_postalcode: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'PostalCode\']}'
@@ -188,7 +182,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                           address1_fax: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Fax\']}'
                           address1_latitude: '@body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'Latitude\']'
                           address1_longitude: '@body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'Longitude\']'
-                          emailaddress1: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'cgcloud__Account_Email__c\']}'
+                          emailaddress1: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Email__c\']}'
                           fax: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Fax\']}'
                           industrycode: 25
                         }
@@ -247,7 +241,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                   inputs: {
                     host: {
                       connection: {
-                        name: '@parameters(\'$connections\')[\'sql-1\'][\'connectionId\']'
+                        name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
                       }
                     }
                     method: 'post'
@@ -295,7 +289,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                         kind: 'Http'
                         inputs: {
                           statusCode: 404
-                          body: 'Account @{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'cgcloud__Account_Number__c\']} - @{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Name\']} to delete not found on Dynamics365'
+                          body: 'Account @{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'AccountNumber\']} - @{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Name\']} to delete not found on Dynamics365'
                         }
                       }
                     }
@@ -324,7 +318,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                   inputs: {
                     host: {
                       connection: {
-                        name: '@parameters(\'$connections\')[\'sql-1\'][\'connectionId\']'
+                        name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
                       }
                     }
                     method: 'post'
@@ -421,7 +415,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                         kind: 'Http'
                         inputs: {
                           statusCode: 404
-                          body: 'Account @{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'cgcloud__Account_Number__c\']} - @{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Name\']} to delete not found on Dynamics365'
+                          body: 'Account @{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'AccountNumber\']} - @{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Name\']} to delete not found on Dynamics365'
                         }
                       }
                     }

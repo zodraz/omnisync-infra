@@ -25,50 +25,40 @@
         </complexContent>
     </complexType>
 
-    <complexType name="RetailStore">
+    <complexType name="RetailStore__c">
         <complexContent>
             <extension base="ens:sObject">
                 <sequence>
-                    <element name="AccountId" nillable="true" minOccurs="0" type="ent:ID"/>
-                    <element name="City" nillable="true" minOccurs="0" type="xsd:string"/>
-                    <element name="Country" nillable="true" minOccurs="0" type="xsd:string"/>
+                    <element name="AccountId__c" nillable="true" minOccurs="0" type="ent:ID"/>
+                    <element name="Address__City__s" nillable="true" minOccurs="0" type="xsd:string"/>
+                    <element name="Address__CountryCode__s" nillable="true" minOccurs="0" type="xsd:string"/>
+                    <element name="Address__GeocodeAccuracy__s" nillable="true" minOccurs="0" type="xsd:string"/>
+                    <element name="Address__Latitude__s" nillable="true" minOccurs="0" type="xsd:double"/>
+                    <element name="Address__Longitude__s" nillable="true" minOccurs="0" type="xsd:double"/>
+                    <element name="Address__PostalCode__s" nillable="true" minOccurs="0" type="xsd:string"/>
+                    <element name="Address__StateCode__s" nillable="true" minOccurs="0" type="xsd:string"/>
+                    <element name="Address__Street__s" nillable="true" minOccurs="0" type="xsd:string"/>
                     <element name="CreatedById" nillable="true" minOccurs="0" type="ent:ID"/>
                     <element name="CreatedDate" nillable="true" minOccurs="0" type="xsd:dateTime"/>
                     <element name="CurrencyIsoCode" nillable="true" minOccurs="0" type="xsd:string"/>
-                    <element name="DeliveryFrequency" nillable="true" minOccurs="0" type="xsd:int"/>
-                    <element name="DeliveryFrequencyType" nillable="true" minOccurs="0" type="xsd:string"/>
-                    <element name="DeliveryMethod" nillable="true" minOccurs="0" type="xsd:string"/>
-                    <element name="Description" nillable="true" minOccurs="0" type="xsd:string"/>
+                    <element name="Description__c" nillable="true" minOccurs="0" type="xsd:string"/>
                     <element name="EmployeeCount__c" nillable="true" minOccurs="0" type="xsd:double"/>
                     <element name="Fax__c" nillable="true" minOccurs="0" type="xsd:string"/>
-                    <element name="GeocodeAccuracy" nillable="true" minOccurs="0" type="xsd:string"/>
                     <element name="IsDeleted" nillable="true" minOccurs="0" type="xsd:boolean"/>
+                    <element name="LastActivityDate" nillable="true" minOccurs="0" type="xsd:date"/>
                     <element name="LastModifiedById" nillable="true" minOccurs="0" type="ent:ID"/>
                     <element name="LastModifiedDate" nillable="true" minOccurs="0" type="xsd:dateTime"/>
                     <element name="LastReferencedDate" nillable="true" minOccurs="0" type="xsd:dateTime"/>
                     <element name="LastViewedDate" nillable="true" minOccurs="0" type="xsd:dateTime"/>
-                    <element name="Latitude" nillable="true" minOccurs="0" type="xsd:double"/>
-                    <element name="LocationId" nillable="true" minOccurs="0" type="ent:ID"/>
-                    <element name="Longitude" nillable="true" minOccurs="0" type="xsd:double"/>
                     <element name="Name" nillable="true" minOccurs="0" type="xsd:string"/>
-                    <element name="OperatingHoursId" nillable="true" minOccurs="0" type="ent:ID"/>
                     <element name="OwnerId" nillable="true" minOccurs="0" type="ent:ID"/>
-                    <element name="PaymentMethod" nillable="true" minOccurs="0" type="xsd:string"/>
                     <element name="Phone__c" nillable="true" minOccurs="0" type="xsd:string"/>
-                    <element name="PostalCode" nillable="true" minOccurs="0" type="xsd:string"/>
-                    <element name="PreferredVisitHoursId" nillable="true" minOccurs="0" type="ent:ID"/>
-                    <element name="PrimaryContactId" nillable="true" minOccurs="0" type="ent:ID"/>
-                    <element name="Priority" nillable="true" minOccurs="0" type="xsd:string"/>
-                    <element name="RecommendedVisitFrequency" nillable="true" minOccurs="0" type="xsd:int"/>
-                    <element name="RecommendedVisitFrequencyType" nillable="true" minOccurs="0" type="xsd:string"/>
-                    <element name="RetailLocationGroupId" nillable="true" minOccurs="0" type="ent:ID"/>
-                    <element name="State" nillable="true" minOccurs="0" type="xsd:string"/>
-                    <element name="StoreType" nillable="true" minOccurs="0" type="xsd:string"/>
                     <element name="StoreCode__c" nillable="true" minOccurs="0" type="xsd:string"/>
-                    <element name="StoreTypeID__c" nillable="true" minOccurs="0" type="xsd:double"/>
-                    <element name="Street" nillable="true" minOccurs="0" type="xsd:string"/>
+                    <element name="StoreTypeId__c" nillable="true" minOccurs="0" type="xsd:double"/>
+                    <element name="StoreType__c" nillable="true" minOccurs="0" type="xsd:string"/>
+                    <element name="SyncStatus__c" nillable="true" minOccurs="0" type="xsd:string"/>
                     <element name="SystemModstamp" nillable="true" minOccurs="0" type="xsd:dateTime"/>
-                </sequence>
+                 </sequence>
             </extension>
         </complexContent>
     </complexType>
