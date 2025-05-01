@@ -71,7 +71,7 @@ resource evgs_omnisync_salesforce_fabric_pricebooks 'Microsoft.EventGrid/topics/
     labels: []
     eventDeliverySchema: 'CloudEventSchemaV1_0'
     retryPolicy: {
-      maxDeliveryAttempts: 30
+      maxDeliveryAttempts: 1
       eventTimeToLiveInMinutes: 1440
     }
   }
@@ -96,7 +96,7 @@ resource evgs_omnisync_salesforce_fabric_products 'Microsoft.EventGrid/topics/ev
     labels: []
     eventDeliverySchema: 'CloudEventSchemaV1_0'
     retryPolicy: {
-      maxDeliveryAttempts: 30
+      maxDeliveryAttempts: 1
       eventTimeToLiveInMinutes: 1440
     }
   }
@@ -121,7 +121,7 @@ resource evgs_omnisync_salesforce_fabric_salesorders 'Microsoft.EventGrid/topics
     labels: []
     eventDeliverySchema: 'CloudEventSchemaV1_0'
     retryPolicy: {
-      maxDeliveryAttempts: 30
+      maxDeliveryAttempts: 1
       eventTimeToLiveInMinutes: 1440
     }
   }
@@ -171,7 +171,7 @@ resource evgs_omnisync_salesforce_d365_accounts 'Microsoft.EventGrid/topics/even
     labels: []
     eventDeliverySchema: 'CloudEventSchemaV1_0'
     retryPolicy: {
-      maxDeliveryAttempts: 30
+      maxDeliveryAttempts: 1
       eventTimeToLiveInMinutes: 1440
     }
   }

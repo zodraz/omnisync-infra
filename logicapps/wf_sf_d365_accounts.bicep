@@ -119,7 +119,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                     SicDesc: {}
                     OperatingHoursId: {}
                     Email__c: {}
-                    Sync_Status__c: {}
+                    SyncStatus__c: {}
                   }
                 }
               }
@@ -212,7 +212,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                           method: 'patch'
                           body: {
                             Name: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Name\']}'
-                            Sync_Status__c: 'Conflict'
+                            SyncStatus__c: 'Conflict'
                           }
                           path: '/v3/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items/@{encodeURIComponent(encodeURIComponent(first(body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ChangeEventHeader\']?[\'recordIds\'])))}'
                         }
