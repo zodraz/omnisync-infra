@@ -196,14 +196,10 @@ module logicapps_sf_d365_accounts_module './logicapps/wf_sf_d365_accounts.bicep'
     location: location
     location_abbreviation: location_abbreviation
     resource_number: resource_number
-    // ia_omnisync_id: integration_account_module.outputs.ia_omnisync_id
     connections_salesforce_id: logicapps_sf_connection_module.outputs.connections_salesforce_id
     connections_sql_id: logicapps_sql_connection_module.outputs.connections_sql_id
     connections_cds_id: logicapps_cds_connection_module.outputs.connections_cds_name_id
-    // d365_organization: d365_organization
-    // integration_user: integration_user
-    // database: database
-    // sql_connection_string: sql_connection_string
+
   }
 }
 
@@ -245,18 +241,8 @@ module logicapps_sf_fabric_currencytype_update_module './logicapps/wf_sf_fabric_
   }
 }
 
-// module logicAppsSfFabricOrderDetailsDeleteModule './logicapps/wf-sf-fabric-orderdetails-delete.bicep' = {
-//   name: 'logicAppsSfFabricOrderDetailsDeleteDeployment'
-//   params: {
-//     env: env
-//     location: location
-//     location_abbreviation: location_abbreviation
-//     resource_number: resource_number
-//     connections_eventhubs_id: logicapps_eh_connection_module.outputs.connections_eventhubs_id
-//   }
-// }
-module logicapps_sf_fabric_orderdetails_module './logicapps/wf_sf_fabric_orderdetails.bicep' = {
-  name: 'logicAppsSfFabricOrderDetailsDeployment'
+module logicapps_sf_fabric_orderproducts_module './logicapps/wf_sf_fabric_orderproducts.bicep' = {
+  name: 'logicAppsSfFabricOrderProductsDeployment'
   params: {
     env: env
     location: location
@@ -359,8 +345,7 @@ module eventgrid_module './event_grid.bicep' = {
     topics_evgt_omnisync_salesforce_fabric_webhook_url_account:logicapps_sf_fabric_accounts_module.outputs.wf_sf_fabric_omnisync_accounts_callbackurl
     topics_evgt_omnisync_salesforce_fabric_webhook_url_product:logicapps_sf_fabric_products_module.outputs.wf_sf_fabric_omnisync_products_callbackurl
     topics_evgt_omnisync_salesforce_fabric_webhook_url_pricebookentry: logicapps_sf_fabric_pricebooks_module.outputs.wf_sf_fabric_omnisync_pricebooks_callbackurl
-    topics_evgt_omnisync_salesforce_fabric_webhook_url_orderitem: logicapps_sf_fabric_orderdetails_module.outputs.wf_sf_fabric_omnisync_orderdetails_callbackurl
-    // topics_evgt_omnisync_salesforce_webhook_url_orderiktem_deleted: logicAppsSfFabricOrderDetailsDeleteModule.outputs.wf_sf_fabric_omnisync_orderdetails_delete_callbackurl
+    topics_evgt_omnisync_salesforce_fabric_webhook_url_orderitem: logicapps_sf_fabric_orderproducts_module.outputs.wf_sf_fabric_omnisync_orderproducts_callbackurl
     topics_evgt_omnisync_salesforce_d365_webhook_url_account: logicapps_sf_d365_accounts_module.outputs.wf_sf_d365_omnisync_accounts_callbackurl
   }
 }

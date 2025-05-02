@@ -3,12 +3,12 @@ param location_abbreviation string ='ne'
 param resource_number string='01'
 param suffix string = '${env}-${location_abbreviation}-${resource_number}'
 param location string ='northeurope'
-param wf_sf_fabric_omnisync_orderdetails_name string = 'wf-sf-fabric-omnisync-orderdetails-${suffix}'
+param wf_sf_fabric_omnisync_orderproducts_name string = 'wf-sf-fabric-omnisync-orderproducts-${suffix}'
 param connections_eventhubs_id string=''
 param connections_salesforce_id string=''
 
-resource wf_sf_fabric_omnisync_orderdetails 'Microsoft.Logic/workflows@2019-05-01' = {
-  name: wf_sf_fabric_omnisync_orderdetails_name
+resource wf_sf_fabric_omnisync_orderproducts 'Microsoft.Logic/workflows@2019-05-01' = {
+  name: wf_sf_fabric_omnisync_orderproducts_name
   location: location
   properties: {
     state: 'Enabled'
@@ -189,4 +189,4 @@ resource wf_sf_fabric_omnisync_orderdetails 'Microsoft.Logic/workflows@2019-05-0
   }
 }
 
-output wf_sf_fabric_omnisync_orderdetails_callbackurl string = listCallbackURL('${wf_sf_fabric_omnisync_orderdetails.id}/triggers/When_a_HTTP_request_is_received', '2019-05-01').value
+output wf_sf_fabric_omnisync_orderproducts_callbackurl string = listCallbackURL('${wf_sf_fabric_omnisync_orderproducts.id}/triggers/When_a_HTTP_request_is_received', '2019-05-01').value
