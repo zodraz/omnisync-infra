@@ -3,12 +3,13 @@ param location_abbreviation string ='ne'
 param resource_number string='01'
 param suffix string = '${env}-${location_abbreviation}-${resource_number}'
 param location string ='northeurope'
-param wf_d365_fabric_omnisync_orderproducts_name string = 'wf-d365-fabric-omnisync-orderproducts-${suffix}'
-param connections_eventhubs_id string=''
+param wf_sf_d365_omnisync_retailstores_insert_name string = 'wf-sf-d365-omnisyncinc-retailstores-insert-${suffix}'
+param connections_salesforce_id string=''
+param connections_sql_id string=''
 param connections_cds_id string=''
 
-resource wf_d365_fabric_omnisync_orderproducts 'Microsoft.Logic/workflows@2019-05-01' = {
-  name: wf_d365_fabric_omnisync_orderproducts_name
+resource wf_sf_d365_omnisync_retailstores_insert 'Microsoft.Logic/workflows@2019-05-01' = {
+  name: wf_sf_d365_omnisync_retailstores_insert_name
   location: location
   properties: {
     state: 'Enabled'
@@ -103,15 +104,20 @@ resource wf_d365_fabric_omnisync_orderproducts 'Microsoft.Logic/workflows@2019-0
     parameters: {
       '$connections': {
         value: {
-          eventhubs: {
-            id: '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Web/locations/${location}/managedApis/eventhubs'
-            connectionId: connections_eventhubs_id
-            connectionName: 'eventhubs'
-          }
           commondataservice: {
             id: '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Web/locations/${location}/managedApis/commondataservice'
             connectionId: connections_cds_id
             connectionName: 'commondataservice'
+          }
+          salesforce: {
+            id: '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Web/locations/${location}/managedApis/salesforce'
+            connectionId: connections_salesforce_id
+            connectionName: 'salesforce'
+          }
+          sql: {
+            id: '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Web/locations/${location}/managedApis/sql'
+            connectionId: connections_sql_id
+            connectionName: 'sql'
           }
         }
       }
