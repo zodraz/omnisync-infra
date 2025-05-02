@@ -26,6 +26,11 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
         When_a_HTTP_request_is_received: {
           type: 'Request'
           kind: 'Http'
+          runtimeConfiguration: {
+            concurrency: {
+              runs: 1
+            }
+          }
         }
       }
       actions: {
@@ -119,7 +124,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                     SicDesc: {}
                     OperatingHoursId: {}
                     Email__c: {}
-                    SyncStatus__c: {}
+                    Sync_Status__c: {}
                   }
                 }
               }
@@ -136,85 +141,208 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
             Create: {
               case: 'CREATE'
               actions: {
-                Get_Mapped_D365Id_for_Insert: {
+                Get_Account_by_AccountNumber: {
                   type: 'ApiConnection'
                   inputs: {
                     host: {
                       connection: {
-                        name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
+                        name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
                       }
                     }
-                    method: 'post'
-                    body: {
-                      query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Customer\''
-                      formalParameters: {
-                        Name: 'NVARCHAR(100)'
-                      }
-                      actualParameters: {
-                        Name: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'AccountNumber\']}'
-                      }
+                    method: 'get'
+                    headers: {
+                      prefer: 'odata.include-annotations=*'
+                      accept: 'application/json;odata.metadata=full'
+                      organization: 'https://org58211bdf.crm4.dynamics.com'
                     }
-                    path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
+                    path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'accounts\'))}'
+                    queries: {
+                      '$filter': 'accountnumber eq \'@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'AccountNumber\']}\''
+                    }
                   }
                 }
-                Check_if_AccountNumber_exists_in_D365: {
+                Check_if_Account_exists_in_D365: {
                   actions: {
-                    Add_a_new__Account: {
+                    Get_Mapped_D365Id_for_Insert: {
                       type: 'ApiConnection'
                       inputs: {
                         host: {
                           connection: {
-                            name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                            name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
                           }
                         }
                         method: 'post'
                         body: {
-                          name: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Name\']}'
-                          accountnumber: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'AccountNumber\']}'
-                          address1_city: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'City\']}'
-                          address1_line1: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'Street\']}'
-                          address1_postalcode: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'PostalCode\']}'
-                          revenue: '@body(\'Parse_CDC_JSON\')?[\'payload\']?[\'AnnualRevenue\']'
-                          telephone1: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Phone\']}'
-                          numberofemployees: '@body(\'Parse_CDC_JSON\')?[\'payload\']?[\'NumberOfEmployees\']'
-                          address1_country: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'State\']}'
-                          address1_county: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'Country\']}'
-                          address1_fax: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Fax\']}'
-                          address1_latitude: '@body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'Latitude\']'
-                          address1_longitude: '@body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'Longitude\']'
-                          emailaddress1: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Email__c\']}'
-                          fax: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Fax\']}'
-                          industrycode: 25
+                          query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Customer\' AND SalesForceId IS NOT NULL AND D365Id IS NOT NULL'
+                          formalParameters: {
+                            Name: 'NVARCHAR(100)'
+                          }
+                          actualParameters: {
+                            Name: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'AccountNumber\']}'
+                          }
                         }
-                        headers: {
-                          prefer: 'return=representation,odata.include-annotations=*'
-                          organization: 'https://org58211bdf.crm4.dynamics.com'
-                        }
-                        path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'accounts\'))}'
+                        path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
                       }
+                    }
+                    Check_if_AccountNumber_exists_in_Fabric: {
+                      actions: {
+                        Update_Status_Conflict_Account: {
+                          type: 'ApiConnection'
+                          inputs: {
+                            host: {
+                              connection: {
+                                name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
+                              }
+                            }
+                            method: 'patch'
+                            body: {
+                              Name: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Name\']}'
+                              SyncStatus__c: 'Conflict'
+                            }
+                            path: '/v3/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items/@{encodeURIComponent(encodeURIComponent(first(body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ChangeEventHeader\']?[\'recordIds\'])))}'
+                          }
+                        }
+                      }
+                      runAfter: {
+                        Get_Mapped_D365Id_for_Insert: [
+                          'Succeeded'
+                        ]
+                      }
+                      else: {
+                        actions: {}
+                      }
+                      expression: {
+                        and: [
+                          {
+                            not: {
+                              equals: [
+                                '@length(string(body(\'Get_Mapped_D365Id_for_Insert\')?[\'resultsets\']))'
+                                2
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                      type: 'If'
                     }
                   }
                   runAfter: {
-                    Get_Mapped_D365Id_for_Insert: [
+                    Get_Account_by_AccountNumber: [
                       'Succeeded'
                     ]
                   }
                   else: {
                     actions: {
-                      Update_Status_Account: {
+                      Add_a_new__Account: {
                         type: 'ApiConnection'
                         inputs: {
                           host: {
                             connection: {
-                              name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
+                              name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
                             }
                           }
-                          method: 'patch'
+                          method: 'post'
                           body: {
-                            Name: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Name\']}'
-                            SyncStatus__c: 'Conflict'
+                            name: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Name\']}'
+                            accountnumber: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'AccountNumber\']}'
+                            address1_city: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'City\']}'
+                            address1_line1: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'Street\']}'
+                            address1_postalcode: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'PostalCode\']}'
+                            revenue: '@body(\'Parse_CDC_JSON\')?[\'payload\']?[\'AnnualRevenue\']'
+                            telephone1: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Phone\']}'
+                            numberofemployees: '@body(\'Parse_CDC_JSON\')?[\'payload\']?[\'NumberOfEmployees\']'
+                            address1_country: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'State\']}'
+                            address1_county: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'Country\']}'
+                            address1_fax: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Fax\']}'
+                            address1_latitude: '@body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'Latitude\']'
+                            address1_longitude: '@body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ShippingAddress\']?[\'Longitude\']'
+                            emailaddress1: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Email__c\']}'
+                            fax: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Fax\']}'
+                            industrycode: 25
                           }
-                          path: '/v3/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items/@{encodeURIComponent(encodeURIComponent(first(body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ChangeEventHeader\']?[\'recordIds\'])))}'
+                          headers: {
+                            prefer: 'return=representation,odata.include-annotations=*'
+                            organization: 'https://org58211bdf.crm4.dynamics.com'
+                          }
+                          path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'accounts\'))}'
+                        }
+                      }
+                      Get_Mapped_D365Id_for_Insert_to_Update: {
+                        runAfter: {
+                          Delay_for_CDC_on_SalesForce_on_Fabric: [
+                            'Succeeded'
+                          ]
+                        }
+                        type: 'ApiConnection'
+                        inputs: {
+                          host: {
+                            connection: {
+                              name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
+                            }
+                          }
+                          method: 'post'
+                          body: {
+                            query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Customer\' AND SalesForceId IS NOT NULL'
+                            formalParameters: {
+                              Name: 'NVARCHAR(100)'
+                            }
+                            actualParameters: {
+                              Name: '@{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'AccountNumber\']}'
+                            }
+                          }
+                          path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
+                        }
+                      }
+                      Create_CDC_Store: {
+                        runAfter: {
+                          Get_Mapped_D365Id_for_Insert_to_Update: [
+                            'Succeeded'
+                          ]
+                        }
+                        type: 'Compose'
+                        inputs: {
+                          Operation: 'Update'
+                          Entity: 'MasterDataMapping'
+                          Values: '{ "SalesForceId": "@{body(\'Get_Mapped_D365Id_for_Insert_to_Update\')?[\'ResultSets\']?[\'Table1\']?[0]?[\'SalesForceId\']}","D365IdToInsert": "@{body(\'Add_a_new__Account\')?[\'accountid\']}"}'
+                          CreatedDate: '@utcNow()'
+                          UpdatedDate: '@utcNow()'
+                        }
+                      }
+                      Send_CDC_event: {
+                        runAfter: {
+                          Create_CDC_Store: [
+                            'Succeeded'
+                          ]
+                        }
+                        type: 'ApiConnection'
+                        inputs: {
+                          host: {
+                            connection: {
+                              name: '@parameters(\'$connections\')[\'eventhubs\'][\'connectionId\']'
+                            }
+                          }
+                          method: 'post'
+                          body: {
+                            ContentData: '@base64(outputs(\'Create_CDC_Store\'))'
+                          }
+                          path: '/@{encodeURIComponent(\'eh-omnisync-prod-ne-01\')}/events'
+                          queries: {
+                            partitionKey: '0'
+                          }
+                        }
+                      }
+                      Delay_for_CDC_on_SalesForce_on_Fabric: {
+                        runAfter: {
+                          Add_a_new__Account: [
+                            'Succeeded'
+                          ]
+                        }
+                        type: 'Wait'
+                        inputs: {
+                          interval: {
+                            count: 3
+                            unit: 'Minute'
+                          }
                         }
                       }
                     }
@@ -222,9 +350,9 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                   expression: {
                     and: [
                       {
-                        equals: [
-                          '@length(string(body(\'Get_Mapped_D365Id_for_Insert\')?[\'resultsets\']))\r\n\r\n'
-                          2
+                        greater: [
+                          '@length(body(\'Get_Account_by_AccountNumber\')?[\'value\'])'
+                          0
                         ]
                       }
                     ]
@@ -258,25 +386,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                   }
                 }
                 'Check_if_Mapping_Customer_(for_Update)_row_exists_': {
-                  actions: {
-                    Update_an_Account: {
-                      type: 'ApiConnection'
-                      inputs: {
-                        host: {
-                          connection: {
-                            name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
-                          }
-                        }
-                        method: 'patch'
-                        headers: {
-                          prefer: 'return=representation,odata.include-annotations=*'
-                          accept: 'application/json;odata.metadata=full'
-                          organization: 'https://org58211bdf.crm4.dynamics.com'
-                        }
-                        path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'accounts\'))}(@{encodeURIComponent(encodeURIComponent(first(body(\'Get_Mapped_D365Id_for_Update\')?[\'D365\'])))})'
-                      }
-                    }
-                  }
+                  actions: {}
                   runAfter: {
                     Get_Mapped_D365Id_for_Update: [
                       'Succeeded'
@@ -291,6 +401,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                           statusCode: 404
                           body: 'Account @{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'AccountNumber\']} - @{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Name\']} to delete not found on Dynamics365'
                         }
+                        operationOptions: 'Asynchronous'
                       }
                     }
                   }
@@ -336,58 +447,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                 }
                 'Check_if_Mapping_Customer_(for_Delete)_row_exists': {
                   actions: {
-                    Get_Orders: {
-                      type: 'ApiConnection'
-                      inputs: {
-                        host: {
-                          connection: {
-                            name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
-                          }
-                        }
-                        method: 'get'
-                        headers: {
-                          prefer: 'odata.include-annotations=*'
-                          accept: 'application/json;odata.metadata=full'
-                          organization: 'https://org58211bdf.crm4.dynamics.com'
-                        }
-                        path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'salesorders\'))}'
-                        queries: {
-                          '$filter': 'account eq @{first(body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ChangeEventHeader\']?[\'recordIds\'])}'
-                        }
-                      }
-                    }
-                    For_each_order: {
-                      foreach: '@body(\'Get_Orders\')?[\'value\']'
-                      actions: {
-                        Delete_Order: {
-                          type: 'ApiConnection'
-                          inputs: {
-                            host: {
-                              connection: {
-                                name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
-                              }
-                            }
-                            method: 'delete'
-                            headers: {
-                              organization: 'https://org58211bdf.crm4.dynamics.com'
-                            }
-                            path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'salesorders\'))}(@{encodeURIComponent(encodeURIComponent(item()?[\'@odata.id\']))})'
-                          }
-                        }
-                      }
-                      runAfter: {
-                        Get_Orders: [
-                          'Succeeded'
-                        ]
-                      }
-                      type: 'Foreach'
-                    }
                     Delete_Account: {
-                      runAfter: {
-                        For_each_order: [
-                          'Succeeded'
-                        ]
-                      }
                       type: 'ApiConnection'
                       inputs: {
                         host: {
@@ -399,7 +459,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                         headers: {
                           organization: 'https://org58211bdf.crm4.dynamics.com'
                         }
-                        path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'accounts\'))}(@{encodeURIComponent(encodeURIComponent(first(body(\'Parse_CDC_JSON\')?[\'payload\']?[\'ChangeEventHeader\']?[\'recordIds\'])))})'
+                        path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'accounts\'))}(@{encodeURIComponent(encodeURIComponent(body(\'Get_Mapped_D365Id_for_Delete\')?[\'ResultSets\']?[\'Table1\']?[0]?[\'D365Id\']))})'
                       }
                     }
                   }
@@ -417,6 +477,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                           statusCode: 404
                           body: 'Account @{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'AccountNumber\']} - @{body(\'Parse_CDC_JSON\')?[\'payload\']?[\'Name\']} to delete not found on Dynamics365'
                         }
+                        operationOptions: 'Asynchronous'
                       }
                     }
                   }
@@ -446,6 +507,7 @@ resource wf_sf_d365_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' = {
                   statusCode: 400
                   body: 'Operation not supported'
                 }
+                operationOptions: 'Asynchronous'
               }
             }
           }

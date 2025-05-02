@@ -45,7 +45,7 @@ resource wf_d365_omnisync_accounts_update 'Microsoft.Logic/workflows@2019-05-01'
             }
             body: {
               entityname: 'account'
-              message: 7
+              message: 3
               scope: 4
               version: 1
               url: '@listCallbackUrl()'
@@ -70,290 +70,6 @@ resource wf_d365_omnisync_accounts_update 'Microsoft.Logic/workflows@2019-05-01'
           }
           else: {
             actions: {
-              Operation: {
-                cases: {
-                  Create: {
-                    case: 'Create'
-                    actions: {
-                      Check_if_AccountNumber_exists_in_SalesForce: {
-                        actions: {
-                          Create_Account: {
-                            type: 'ApiConnection'
-                            inputs: {
-                              host: {
-                                connection: {
-                                  name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
-                                }
-                              }
-                              method: 'post'
-                              body: {
-                                Name: '@triggerBody()?[\'name\']'
-                                BillingStreet: '@triggerBody()?[\'address1_line1\']'
-                                BillingCity: '@triggerBody()?[\'address1_city\']'
-                                BillingState: '@triggerBody()?[\'address1_stateorprovince\']'
-                                BillingPostalCode: '@triggerBody()?[\'address1_postalcode\']'
-                                BillingCountry: '@triggerBody()?[\'address1_country\']'
-                                AccountNumber: '@triggerBody()?[\'accountnumber\']'
-                                Type: 'Customer'
-                                BillingLatitude: '@triggerBody()?[\'address1_latitude\']'
-                                BillingLongitude: '@triggerBody()?[\'address1_longitude\']'
-                                Phone: '@triggerBody()?[\'telephone1\']'
-                                Fax: '@triggerBody()?[\'fax\']'
-                                Website: '@triggerBody()?[\'websiteurl\']'
-                                Industry: 'Retail'
-                                AnnualRevenue: '@triggerBody()?[\'revenue\']'
-                                NumberOfEmployees: '@triggerBody()?[\'numberofemployees\']'
-                                CurrencyIsoCode: '@triggerBody()?[\'_transactioncurrencyid_value@Microsoft.Dynamics.CRM.lookuplogicalname\']'
-                                Email__c: '@triggerBody()?[\'emailaddress1\']'
-                              }
-                              path: '/v2/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items'
-                            }
-                          }
-                        }
-                        runAfter: {
-                          Get_Mapped_SalesForceId_for_Insert: [
-                            'Succeeded'
-                          ]
-                        }
-                        else: {
-                          actions: {
-                            Update_Status_Account: {
-                              type: 'ApiConnection'
-                              inputs: {
-                                host: {
-                                  connection: {
-                                    name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
-                                  }
-                                }
-                                method: 'patch'
-                                body: {
-                                  omnisync_syncstatus: 'Conflict'
-                                }
-                                headers: {
-                                  prefer: 'return=representation,odata.include-annotations=*'
-                                  accept: 'application/json;odata.metadata=full'
-                                  organization: 'https://org58211bdf.crm4.dynamics.com'
-                                }
-                                path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'accounts\'))}(@{encodeURIComponent(encodeURIComponent(triggerBody()?[\'accountid\']))})'
-                              }
-                            }
-                          }
-                        }
-                        expression: {
-                          and: [
-                            {
-                              equals: [
-                                '@length(string(body(\'Get_Mapped_SalesForceId_for_Insert\')?[\'resultsets\']))'
-                                2
-                              ]
-                            }
-                          ]
-                        }
-                        type: 'If'
-                      }
-                      Get_Mapped_SalesForceId_for_Insert: {
-                        type: 'ApiConnection'
-                        inputs: {
-                          host: {
-                            connection: {
-                              name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
-                            }
-                          }
-                          method: 'post'
-                          body: {
-                            query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Customer\''
-                            formalParameters: {
-                              Name: 'NVARCHAR(100)'
-                            }
-                            actualParameters: {
-                              Name: '@triggerBody()?[\'accountnumber\']'
-                            }
-                          }
-                          path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
-                        }
-                      }
-                    }
-                  }
-                  Update: {
-                    case: 'Update'
-                    actions: {
-                      Get_Mapped_SalesForceId_for_Update: {
-                        type: 'ApiConnection'
-                        inputs: {
-                          host: {
-                            connection: {
-                              name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
-                            }
-                          }
-                          method: 'post'
-                          body: {
-                            query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE D365Id=@D365Id AND Entity=\'Customer\''
-                            formalParameters: {
-                              D365Id: 'NVARCHAR(100)'
-                            }
-                            actualParameters: {
-                              D365Id: '@triggerBody()?[\'accountid\']'
-                            }
-                          }
-                          path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
-                        }
-                      }
-                      'Check_if_Mapping_Customer_(for_Update)_row_exists_': {
-                        actions: {
-                          Update_Account: {
-                            type: 'ApiConnection'
-                            inputs: {
-                              host: {
-                                connection: {
-                                  name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
-                                }
-                              }
-                              method: 'patch'
-                              body: {
-                                Name: '@triggerBody()?[\'name\']'
-                                BillingStreet: '@triggerBody()?[\'address1_line1\']'
-                                BillingCity: '@triggerBody()?[\'address1_city\']'
-                                BillingState: '@triggerBody()?[\'address1_stateorprovince\']'
-                                BillingPostalCode: '@triggerBody()?[\'address1_postalcode\']'
-                                BillingCountry: '@triggerBody()?[\'address2_country\']'
-                                AccountNumber: '@triggerBody()?[\'accountnumber\']'
-                                BillingLatitude: '@triggerBody()?[\'address1_latitude\']'
-                                BillingLongitude: '@triggerBody()?[\'address1_longitude\']'
-                                Phone: '@triggerBody()?[\'telephone1\']'
-                                Fax: '@triggerBody()?[\'address1_fax\']'
-                                Website: '@triggerBody()?[\'websiteurl\']'
-                                Industry: 'Retail'
-                                AnnualRevenue: '@triggerBody()?[\'revenue\']'
-                                NumberOfEmployees: '@triggerBody()?[\'numberofemployees\']'
-                                Description: '@triggerBody()?[\'description\']'
-                                CurrencyIsoCode: '@triggerBody()?[\'_transactioncurrencyid_value@Microsoft.Dynamics.CRM.lookuplogicalname\']'
-                                Email__c: '@triggerBody()?[\'emailaddress1\']'
-                              }
-                              path: '/v3/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items/@{encodeURIComponent(encodeURIComponent(first(body(\'Get_Mapped_SalesForceId_for_Update\'))?[\'SalesForceId\']))}'
-                            }
-                          }
-                        }
-                        runAfter: {
-                          Get_Mapped_SalesForceId_for_Update: [
-                            'Succeeded'
-                          ]
-                        }
-                        else: {
-                          actions: {
-                            'Response_Account_not_found_(on_Update)': {
-                              type: 'Response'
-                              kind: 'Http'
-                              inputs: {
-                                statusCode: 404
-                                body: 'Account  @{triggerBody()?[\'accountnumber\']}- @{triggerBody()?[\'name\']} to update not found on Dynamics365'
-                              }
-                            }
-                          }
-                        }
-                        expression: {
-                          and: [
-                            {
-                              not: {
-                                equals: [
-                                  '@length(string(body(\'Get_Mapped_SalesForceId_for_Update\')?[\'resultsets\']))'
-                                  2
-                                ]
-                              }
-                            }
-                          ]
-                        }
-                        type: 'If'
-                      }
-                    }
-                  }
-                  Delete: {
-                    case: 'Delete'
-                    actions: {
-                      Get_Mapped_SalesForceId_for_Delete: {
-                        type: 'ApiConnection'
-                        inputs: {
-                          host: {
-                            connection: {
-                              name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
-                            }
-                          }
-                          method: 'post'
-                          body: {
-                            query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE D365Id=@D365Id AND Entity=\'Customer\''
-                            formalParameters: {
-                              D365Id: 'NVARCHAR(100)'
-                            }
-                            actualParameters: {
-                              D365Id: '@triggerBody()?[\'accountid\']'
-                            }
-                          }
-                          path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
-                        }
-                      }
-                      'Check_if_Mapping_Customer_(for_Delete)_row_exists_': {
-                        actions: {
-                          Delete_Account: {
-                            type: 'ApiConnection'
-                            inputs: {
-                              host: {
-                                connection: {
-                                  name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
-                                }
-                              }
-                              method: 'delete'
-                              path: '/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items/@{encodeURIComponent(encodeURIComponent(first(body(\'Get_Mapped_SalesForceId_for_Delete\'))?[\'SalesForceId\']))}'
-                            }
-                          }
-                        }
-                        runAfter: {
-                          Get_Mapped_SalesForceId_for_Delete: [
-                            'Succeeded'
-                          ]
-                        }
-                        else: {
-                          actions: {
-                            'Response_Account_not_found_(on_Delete)': {
-                              type: 'Response'
-                              kind: 'Http'
-                              inputs: {
-                                statusCode: 404
-                                body: 'Account with D365Id  @{triggerBody()?[\'accountid\']} to delete not found on Dynamics365'
-                              }
-                            }
-                          }
-                        }
-                        expression: {
-                          and: [
-                            {
-                              not: {
-                                equals: [
-                                  '@length(string(body(\'Get_Mapped_SalesForceId_for_Delete\')?[\'resultsets\']))'
-                                  2
-                                ]
-                              }
-                            }
-                          ]
-                        }
-                        type: 'If'
-                      }
-                    }
-                  }
-                }
-                default: {
-                  actions: {
-                    Response_Not_Supported: {
-                      type: 'Response'
-                      kind: 'Http'
-                      inputs: {
-                        statusCode: 400
-                        body: 'Operation not supported'
-                      }
-                    }
-                  }
-                }
-                expression: '@triggerBody()?[\'SdkMessage\']'
-                type: 'Switch'
-              }
               Send_to_Fabric: {
                 actions: {
                   Transform_JSON_To_JSON: {
@@ -415,6 +131,93 @@ resource wf_d365_omnisync_accounts_update 'Microsoft.Logic/workflows@2019-05-01'
                 }
                 type: 'Scope'
               }
+              Get_Mapped_SalesForceId_for_Update: {
+                type: 'ApiConnection'
+                inputs: {
+                  host: {
+                    connection: {
+                      name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
+                    }
+                  }
+                  method: 'post'
+                  body: {
+                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE D365Id=@D365Id AND Entity=\'Customer\' AND SalesForceId IS NOT NULL'
+                    formalParameters: {
+                      D365Id: 'NVARCHAR(100)'
+                    }
+                    actualParameters: {
+                      D365Id: '@triggerBody()?[\'accountid\']'
+                    }
+                  }
+                  path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
+                }
+              }
+              'Check_if_Mapping_Customer_(for_Update)_row_exists_': {
+                actions: {
+                  Update_Account: {
+                    type: 'ApiConnection'
+                    inputs: {
+                      host: {
+                        connection: {
+                          name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
+                        }
+                      }
+                      method: 'patch'
+                      body: {
+                        Name: '@triggerBody()?[\'name\']'
+                        AccountNumber: '@triggerBody()?[\'accountnumber\']'
+                        BillingLatitude: '@triggerBody()?[\'address1_latitude\']'
+                        BillingLongitude: '@triggerBody()?[\'address1_longitude\']'
+                        ShippingStreet: '@triggerBody()?[\'address1_line1\']'
+                        ShippingCity: '@triggerBody()?[\'address1_city\']'
+                        ShippingState: '@triggerBody()?[\'address1_stateorprovince\']'
+                        ShippingPostalCode: '@triggerBody()?[\'address1_postalcode\']'
+                        ShippingCountry: '@triggerBody()?[\'address1_country\']'
+                        Phone: '@triggerBody()?[\'telephone1\']'
+                        Fax: '@triggerBody()?[\'address1_fax\']'
+                        Website: '@triggerBody()?[\'websiteurl\']'
+                        Industry: 'Retail'
+                        AnnualRevenue: '@triggerBody()?[\'revenue\']'
+                        NumberOfEmployees: '@triggerBody()?[\'numberofemployees\']'
+                        Description: '@triggerBody()?[\'description\']'
+                        CurrencyIsoCode: 'EUR'
+                        Email__c: '@triggerBody()?[\'emailaddress1\']'
+                      }
+                      path: '/v3/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items/@{encodeURIComponent(encodeURIComponent(body(\'Get_Mapped_SalesForceId_for_Update\')?[\'ResultSets\'][\'Table1\'][0][\'SalesForceId\']))}'
+                    }
+                  }
+                }
+                runAfter: {
+                  Get_Mapped_SalesForceId_for_Update: [
+                    'Succeeded'
+                  ]
+                }
+                else: {
+                  actions: {
+                    'Response_Account_not_found_(on_Update)': {
+                      type: 'Response'
+                      kind: 'Http'
+                      inputs: {
+                        statusCode: 404
+                        body: 'Account  @{triggerBody()?[\'accountnumber\']}- @{triggerBody()?[\'name\']} to update not found on Dynamics365'
+                      }
+                    }
+                  }
+                }
+                expression: {
+                  and: [
+                    {
+                      not: {
+                        equals: [
+                          '@length(string(body(\'Get_Mapped_SalesForceId_for_Update\')?[\'resultsets\']))'
+                          2
+                        ]
+                      }
+                    }
+                  ]
+                }
+                type: 'If'
+              }
             }
           }
           expression: {
@@ -451,20 +254,6 @@ resource wf_d365_omnisync_accounts_update 'Microsoft.Logic/workflows@2019-05-01'
                 }
               }
             }
-            Select_Users: {
-              runAfter: {
-                Get_audit_rows: [
-                  'Succeeded'
-                ]
-              }
-              type: 'Select'
-              inputs: {
-                from: '@outputs(\'Get_audit_rows\')?[\'body/value\']'
-                select: {
-                  userId: '_userid_value'
-                }
-              }
-            }
             Filter_Integration_Users: {
               runAfter: {
                 Select_Users: [
@@ -475,6 +264,20 @@ resource wf_d365_omnisync_accounts_update 'Microsoft.Logic/workflows@2019-05-01'
               inputs: {
                 from: '@body(\'Select_users\')'
                 where: '@equals(item()?[\'userId\'],parameters(\'integration_user\'))'
+              }
+            }
+            Select_Users: {
+              runAfter: {
+                Get_audit_rows: [
+                  'Succeeded'
+                ]
+              }
+              type: 'Select'
+              inputs: {
+                from: '@outputs(\'Get_audit_rows\')?[\'body/value\']'
+                select: {
+                  userId: '@first(outputs(\'Get_audit_rows\')?[\'body/value\'])?[\'_userid_value\']'
+                }
               }
             }
           }

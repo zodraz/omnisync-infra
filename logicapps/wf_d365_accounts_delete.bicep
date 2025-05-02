@@ -141,7 +141,7 @@ resource wf_d365_omnisync_accounts_delete 'Microsoft.Logic/workflows@2019-05-01'
                   }
                   method: 'post'
                   body: {
-                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE D365Id=@D365Id AND Entity=\'Customer\''
+                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE D365Id=@D365Id AND Entity=\'Customer\' AND SalesForceId IS NOT NULL'
                     formalParameters: {
                       D365Id: 'NVARCHAR(100)'
                     }
@@ -163,7 +163,7 @@ resource wf_d365_omnisync_accounts_delete 'Microsoft.Logic/workflows@2019-05-01'
                         }
                       }
                       method: 'delete'
-                      path: '/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items/@{encodeURIComponent(encodeURIComponent(first(body(\'Get_Mapped_SalesForceId\'))?[\'SalesForceId\']))}'
+                      path: '/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items/@{encodeURIComponent(encodeURIComponent(body(\'Get_Mapped_SalesForceId\')?[\'ResultSets\'][\'Table1\'][0][\'SalesForceId\']))}'
                     }
                   }
                 }
@@ -234,20 +234,6 @@ resource wf_d365_omnisync_accounts_delete 'Microsoft.Logic/workflows@2019-05-01'
                 }
               }
             }
-            Select_Users: {
-              runAfter: {
-                Get_audit_rows: [
-                  'Succeeded'
-                ]
-              }
-              type: 'Select'
-              inputs: {
-                from: '@outputs(\'Get_audit_rows\')?[\'body/value\']'
-                select: {
-                  userId: '_userid_value'
-                }
-              }
-            }
             Filter_Integration_Users: {
               runAfter: {
                 Select_Users: [
@@ -258,6 +244,20 @@ resource wf_d365_omnisync_accounts_delete 'Microsoft.Logic/workflows@2019-05-01'
               inputs: {
                 from: '@body(\'Select_users\')'
                 where: '@equals(item()?[\'userId\'],parameters(\'integration_user\'))'
+              }
+            }
+            Select_Users: {
+              runAfter: {
+                Get_audit_rows: [
+                  'Succeeded'
+                ]
+              }
+              type: 'Select'
+              inputs: {
+                from: '@outputs(\'Get_audit_rows\')?[\'body/value\']'
+                select: {
+                  userId: '@first(outputs(\'Get_audit_rows\')?[\'body/value\'])?[\'_userid_value\']'
+                }
               }
             }
           }

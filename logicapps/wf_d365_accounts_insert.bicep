@@ -141,7 +141,7 @@ resource wf_d365_omnisync_accounts_insert 'Microsoft.Logic/workflows@2019-05-01'
                   }
                   method: 'post'
                   body: {
-                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Customer\''
+                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Customer\' AND SalesForceId IS NULL'
                     formalParameters: {
                       Name: 'NVARCHAR(100)'
                     }
@@ -180,10 +180,88 @@ resource wf_d365_omnisync_accounts_insert 'Microsoft.Logic/workflows@2019-05-01'
                         Industry: 'Retail'
                         AnnualRevenue: '@triggerBody()?[\'revenue\']'
                         NumberOfEmployees: '@triggerBody()?[\'numberofemployees\']'
-                        CurrencyIsoCode: '@triggerBody()?[\'_transactioncurrencyid_value@Microsoft.Dynamics.CRM.lookuplogicalname\']'
+                        CurrencyIsoCode: 'EUR'
                         Email__c: '@triggerBody()?[\'emailaddress1\']'
                       }
                       path: '/v2/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items'
+                    }
+                  }
+                  Delay_for_CDC_on_SalesForce_on_Fabric: {
+                    runAfter: {
+                      Create_Account: [
+                        'Succeeded'
+                      ]
+                    }
+                    type: 'Wait'
+                    inputs: {
+                      interval: {
+                        count: 3
+                        unit: 'Minute'
+                      }
+                    }
+                  }
+                  Get_Mapped_D365Id_for_Insert_to_Update: {
+                    runAfter: {
+                      Delay_for_CDC_on_SalesForce_on_Fabric: [
+                        'Succeeded'
+                      ]
+                    }
+                    type: 'ApiConnection'
+                    inputs: {
+                      host: {
+                        connection: {
+                          name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
+                        }
+                      }
+                      method: 'post'
+                      body: {
+                        query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Customer\' AND D365Id IS NOT NULL'
+                        formalParameters: {
+                          Name: 'NVARCHAR(100)'
+                        }
+                        actualParameters: {
+                          Name: '@triggerBody()?[\'accountnumber\']'
+                        }
+                      }
+                      path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
+                    }
+                  }
+                  Create_CDC_Store: {
+                    runAfter: {
+                      Get_Mapped_D365Id_for_Insert_to_Update: [
+                        'Succeeded'
+                      ]
+                    }
+                    type: 'Compose'
+                    inputs: {
+                      Operation: 'Update'
+                      Entity: 'MasterDataMapping'
+                      Values: '{ "SalesForceIdToInsert": "@{body(\'Create_Account\')[\'Id\']}","D365Id": "@{triggerBody()?[\'accountid\']}"}'
+                      CreatedDate: '@utcNow()'
+                      UpdatedDate: '@utcNow()'
+                    }
+                  }
+                  Send_CDC_event_for_SalesForce_insert: {
+                    runAfter: {
+                      Create_CDC_Store: [
+                        'Succeeded'
+                      ]
+                    }
+                    type: 'ApiConnection'
+                    inputs: {
+                      host: {
+                        connection: {
+                          name: '@parameters(\'$connections\')[\'eventhubs\'][\'connectionId\']'
+                        }
+                      }
+                      method: 'post'
+                      body: {
+                        ContentData: '@base64(outputs(\'Create_CDC_Store\'))'
+                      }
+                      path: '/@{encodeURIComponent(\'eh-omnisync-prod-ne-01\')}/events'
+                      queries: {
+                        partitionKey: '0'
+                      }
                     }
                   }
                 }
@@ -264,20 +342,6 @@ resource wf_d365_omnisync_accounts_insert 'Microsoft.Logic/workflows@2019-05-01'
                 }
               }
             }
-            Select_Users: {
-              runAfter: {
-                Get_audit_rows: [
-                  'Succeeded'
-                ]
-              }
-              type: 'Select'
-              inputs: {
-                from: '@outputs(\'Get_audit_rows\')?[\'body/value\']'
-                select: {
-                  userId: '_userid_value'
-                }
-              }
-            }
             Filter_Integration_Users: {
               runAfter: {
                 Select_Users: [
@@ -288,6 +352,20 @@ resource wf_d365_omnisync_accounts_insert 'Microsoft.Logic/workflows@2019-05-01'
               inputs: {
                 from: '@body(\'Select_users\')'
                 where: '@equals(item()?[\'userId\'],parameters(\'integration_user\'))'
+              }
+            }
+            Select_Users: {
+              runAfter: {
+                Get_audit_rows: [
+                  'Succeeded'
+                ]
+              }
+              type: 'Select'
+              inputs: {
+                from: '@outputs(\'Get_audit_rows\')?[\'body/value\']'
+                select: {
+                  userId: '@first(outputs(\'Get_audit_rows\')?[\'body/value\'])?[\'_userid_value\']'
+                }
               }
             }
           }
