@@ -136,13 +136,7 @@ resource wf_sf_fabric_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' =
                     AccountSource: {}
                     SicDesc: {}
                     OperatingHoursId: {}
-                    cgcloud__Account_Email__c: {}
-                    cgcloud__Account_Number__c: {}
-                    cgcloud__Account_Template__c: {}
-                    cgcloud__ExternalId__c: {}
-                    cgcloud__Name_2__c: {}
-                    cgcloud__Number_Of_Extensions__c: {}
-                    SDO_Sales_Closed_Won_Value__c: {}
+                    Email__c: {}
                     Sync_Status__c: {}
                   }
                 }

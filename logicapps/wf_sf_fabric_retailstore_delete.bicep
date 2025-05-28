@@ -20,7 +20,7 @@ resource wf_sf_fabric_omnisync_retailstore_delete 'Microsoft.Logic/workflows@201
       contentVersion: '1.0.0.0'
       parameters: {
         integration_user: {
-          defaultValue: 'integration1@omnisync.com'
+          defaultValue: '005WU00000KkEXaYAN'
           type: 'String'
         }
         '$connections': {
@@ -244,6 +244,19 @@ resource wf_sf_fabric_omnisync_retailstore_delete 'Microsoft.Logic/workflows@201
           }
           type: 'If'
         }
+        Response_notification_ack: {
+          runAfter: {
+            Check_Integration_user: [
+              'Succeeded'
+            ]
+          }
+          type: 'Response'
+          kind: 'Http'
+          inputs: {
+            statusCode: 200
+            body: '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\n\n    <soap:Body>\n\n        <notificationsResponse xmlns:ns2="urn:sobject.enterprise.soap.sforce.com" xmlns="http://soap.sforce.com/2005/09/outbound">\n\n            <Ack>true</Ack>\n\n        </notificationsResponse>\n\n    </soap:Body>\n\n</soap:Envelope>'
+          }
+        }
       }
       outputs: {}
     }
@@ -252,7 +265,7 @@ resource wf_sf_fabric_omnisync_retailstore_delete 'Microsoft.Logic/workflows@201
         type: 'Object'
         value: {
           eventhubs: {
-            id: '/subscriptions/1145166d-1e2c-41f1-a2ca-4325731080ed/providers/Microsoft.Web/locations/northeurope/managedApis/eventhubs'
+            id: '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Web/locations/${location}/managedApis/eventhubs'
             connectionId: connections_eventhubs_id
             connectionName: 'eventhubs'
           }

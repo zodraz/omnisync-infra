@@ -4,18 +4,18 @@
    "Operation": "{{ content.payload.ChangeEventHeader.changeType | capitalize }}",
    "Entity": "Product",
    "Values": "{	
-				\"ProductCode\": \"{{ content.payload.cgcloud__Consumer_Goods_Product_Code__c }}\",			
+				\"ProductCode\": \"{{ content.payload.ProductCode }}\",			
 				{%- for changedField in changedFields -%}			
 					{% if changedField =="Name" %}
 						\"ProductName\": \"{{ content.payload.Name }}\",
-					{% elsif changedField =="cgcloud__Description_1_Language_1__c" %}
-						\"ProductDescription\": \"{{ content.payload.cgcloud__Description_1_Language_1__c }}\",
-					{% elsif changedField =="CategoryId__c" %}
-						\"ProductSubcategoryKey\": \"{{ content.payload.CategoryId__c }}\",
+					{% elsif changedField =="Description" %}
+						\"ProductDescription\": \"{{ content.payload.Description }}\",
+					{% elsif changedField =="FamilyId__c" %}
+						\"ProductSubcategoryKey\": \"{{ content.payload.FamilyId__c }}\",
 					{% elsif changedField =="CurrencyIsoCode" %}
 						\"CurrencyKey\": \"{{ content.payload.CurrencyIsoCode }}\",
-					{% elsif changedField =="cgcloud__Manufacturer__c" %}
-						\"Manufacturer\": \"{{ content.payload.cgcloud__Manufacturer__c }}\",
+					{% elsif changedField =="Manufacturer__c" %}
+						\"Manufacturer\": \"{{ content.payload.Manufacturer__c }}\",
 					{% elsif changedField =="Brand__c" %}
 						\"BrandName\": \"{{ content.payload.Brand__c }}\",
 					{% elsif changedField =="Class__c" %}
@@ -33,8 +33,8 @@
 						\"ColorID\": \"{{ content.payload.ColorId__c }}\",
 					{% elsif changedField == "Color__c" %}
 						\"ColorName\": \"{{ content.payload.Color__c }}\",
-					{% elsif changedField == "cgcloud__Size__c" %}
-						\"Size\": \"{{ content.payload.cgcloud__Size__c }}\",
+					{% elsif changedField == "Size__c" %}
+						\"Size\": \"{{ content.payload.Size__c }}\",
 					{% elsif changedField == "SizeUnitOfMeasure__c" %}
 						\"SizeUnitMeasureName\": \"{{ content.payload.SizeUnitOfMeasure__c }}\",
 						{% if content.payload.SizeUnitOfMeasure__c == "meters" %}
@@ -52,8 +52,8 @@
 						{%- else -%}
 							\"SizeUnitMeasureID\": -1,
 						{% endif %}
-					{% elsif changedField == "cgcloud__Weight__c" %}
-						\"Weight\": \"{{ content.payload.cgcloud__Weight__c }}\",
+					{% elsif changedField == "Weight" %}
+						\"Weight\": \"{{ content.payload.Weight }}\",
 					{% elsif changedField == "WeightUnitOfMeasureId__c" %}
 						\"WeightUnitMeasureID\": \"{{ content.payload.WeightUnitOfMeasureId__c }}\",
 					{% elsif changedField == "WeightUnitOfMeasure__c" %}

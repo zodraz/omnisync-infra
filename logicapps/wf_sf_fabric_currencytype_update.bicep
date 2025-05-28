@@ -65,7 +65,7 @@ resource wf_sf_fabric_omnisync_currency_update 'Microsoft.Logic/workflows@2019-0
                   content: '@triggerBody()'
                   integrationAccount: {
                     map: {
-                      name: 'CurrencyTypeToCurrencyUpdate'
+                      name: 'SalesForceCurrencyTypeToCurrencyUpdate'
                     }
                   }
                 }

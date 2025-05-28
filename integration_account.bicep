@@ -128,6 +128,17 @@ resource ia_omnisync_retailstore_deleted_event 'Microsoft.Logic/integrationAccou
     }
 }
 
+resource ia_omnisync_retailstore 'Microsoft.Logic/integrationAccounts/schemas@2019-05-01' = {
+  parent: ia_omnisync
+  name: 'RetailStore'
+  properties: {
+    schemaType: 'Xml'
+    targetNamespace: 'urn:sobject.enterprise.soap.sforce.com'
+    content: loadTextContent('artifacts/schemas/RetailStore.xsd')
+    contentType: 'application/xml'
+    }
+}
+
 resource ia_omnisync_id 'Microsoft.Logic/integrationAccounts/schemas@2019-05-01' = {
   parent: ia_omnisync
   name: 'ID'
@@ -135,6 +146,17 @@ resource ia_omnisync_id 'Microsoft.Logic/integrationAccounts/schemas@2019-05-01'
     schemaType: 'Xml'
     targetNamespace: 'urn:enterprise.soap.sforce.com'
     content: loadTextContent('artifacts/schemas/ID.xsd')
+    contentType: 'application/xml'
+    }
+}
+
+resource ia_omnisync_outbound_retailstore 'Microsoft.Logic/integrationAccounts/schemas@2019-05-01' = {
+  parent: ia_omnisync
+  name: 'OutboundRetailStore'
+  properties: {
+    schemaType: 'Xml'
+    targetNamespace: 'http://soap.sforce.com/2005/09/outbound'
+    content: loadTextContent('artifacts/schemas/OutboundRetailStore.xsd')
     contentType: 'application/xml'
     }
 }
@@ -149,5 +171,6 @@ resource ia_omnisync_outbound_retailstore_deleted_event 'Microsoft.Logic/integra
     contentType: 'application/xml'
     }
 }
+
 
 output ia_omnisync_id string = ia_omnisync.id
