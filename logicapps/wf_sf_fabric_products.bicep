@@ -179,7 +179,7 @@ resource wf_sf_fabric_omnisync_products 'Microsoft.Logic/workflows@2019-05-01' =
                 content: '@json(triggerBody().data.message)'
                 integrationAccount: {
                   map: {
-                    name: 'Product2ToProductUpdate'
+                    name: 'SalesForceProduct2ToProductUpdate'
                   }
                 }
               }
@@ -220,7 +220,7 @@ resource wf_sf_fabric_omnisync_products 'Microsoft.Logic/workflows@2019-05-01' =
                   content: '@json(triggerBody().data.message)'
                   integrationAccount: {
                     map: {
-                      name: 'Product2ToProduct'
+                      name: 'SalesForceProduct2ToProduct'
                     }
                   }
                 }

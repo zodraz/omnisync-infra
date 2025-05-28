@@ -17,7 +17,7 @@ resource wf_d365_omnisync_products_update 'Microsoft.Logic/workflows@2019-05-01'
     integrationAccount: {
       id: ia_omnisync_id
     }
-    definition: {
+     definition: {
       '$schema': 'https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#'
       contentVersion: '1.0.0.0'
       parameters: {
@@ -36,11 +36,11 @@ resource wf_d365_omnisync_products_update 'Microsoft.Logic/workflows@2019-05-01'
           inputs: {
             host: {
               connection: {
-                name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                name: '@parameters(\'$connections\')[\'commondataservice-1\'][\'connectionId\']'
               }
             }
             body: {
-              entityname: 'account'
+              entityname: 'product'
               message: 3
               scope: 4
               version: 1
@@ -75,7 +75,7 @@ resource wf_d365_omnisync_products_update 'Microsoft.Logic/workflows@2019-05-01'
                       content: '@triggerBody()'
                       integrationAccount: {
                         map: {
-                          name: 'D365AccountToCustomer'
+                          name: 'D365ProductToProduct'
                         }
                       }
                     }
@@ -137,20 +137,20 @@ resource wf_d365_omnisync_products_update 'Microsoft.Logic/workflows@2019-05-01'
                   }
                   method: 'post'
                   body: {
-                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE D365Id=@D365Id AND Entity=\'Customer\' AND SalesForceId IS NOT NULL'
+                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE D365Id=@D365Id AND Entity=\'Product\' AND SalesForceId IS NOT NULL'
                     formalParameters: {
                       D365Id: 'NVARCHAR(100)'
                     }
                     actualParameters: {
-                      D365Id: '@triggerBody()?[\'accountid\']'
+                      D365Id: '@triggerBody()?[\'productid\']'
                     }
                   }
                   path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
                 }
               }
-              'Check_if_Mapping_Customer_(for_Update)_row_exists_': {
+              'Check_if_Mapping_Product_(for_Update)_row_exists_': {
                 actions: {
-                  Update_Account: {
+                  Update_Product: {
                     type: 'ApiConnection'
                     inputs: {
                       host: {
@@ -161,25 +161,135 @@ resource wf_d365_omnisync_products_update 'Microsoft.Logic/workflows@2019-05-01'
                       method: 'patch'
                       body: {
                         Name: '@triggerBody()?[\'name\']'
-                        AccountNumber: '@triggerBody()?[\'accountnumber\']'
-                        BillingLatitude: '@triggerBody()?[\'address1_latitude\']'
-                        BillingLongitude: '@triggerBody()?[\'address1_longitude\']'
-                        ShippingStreet: '@triggerBody()?[\'address1_line1\']'
-                        ShippingCity: '@triggerBody()?[\'address1_city\']'
-                        ShippingState: '@triggerBody()?[\'address1_stateorprovince\']'
-                        ShippingPostalCode: '@triggerBody()?[\'address1_postalcode\']'
-                        ShippingCountry: '@triggerBody()?[\'address1_country\']'
-                        Phone: '@triggerBody()?[\'telephone1\']'
-                        Fax: '@triggerBody()?[\'address1_fax\']'
-                        Website: '@triggerBody()?[\'websiteurl\']'
-                        Industry: 'Retail'
-                        AnnualRevenue: '@triggerBody()?[\'revenue\']'
-                        NumberOfEmployees: '@triggerBody()?[\'numberofemployees\']'
-                        Description: '@triggerBody()?[\'description\']'
+                        ProductCode: '@triggerBody()?[\'productnumber\']'
+                        IsActive: true
+                        Family: '@triggerBody()?[\'_omnisync_category_label\']'
                         CurrencyIsoCode: 'EUR'
-                        Email__c: '@triggerBody()?[\'emailaddress1\']'
+                        FamilyId__c: '@triggerBody()?[\'omnisync_category\']'
+                        Manufacturer__c: '@triggerBody()?[\'omnisync_manufacturer\']'
+                        Brand__c: '@triggerBody()?[\'omnisync_brand\']'
+                        Class__c: '@triggerBody()?[\'_omnisync_class_label\']'
+                        ClassId__c: '@triggerBody()?[\'omnisync_class\']'
+                        ColorId__c: '@triggerBody()?[\'omnisync_color\']'
+                        Color__c: '@triggerBody()?[\'_omnisync_color_label\']'
+                        Size__c: '@triggerBody()?[\'size\']'
+                        SizeUnitOfMeasure__c: '@triggerBody()?[\'_omnisync_sizeunitofmeasure_label\']'
+                        SizeUnitOfMeasureId__c: '@triggerBody()?[\'omnisync_sizeunitofmeasure\']'
+                        Weight__c: '@triggerBody()?[\'omnisync_weight\']'
+                        WeightUnitOfMeasure__c: '@triggerBody()?[\'_omnisync_weightunitofmeasure_label\']'
+                        WeightUnitOfMeasureId__c: '@triggerBody()?[\'omnisync_weightunitofmeasure\']'
+                        AvailableForSaleDate__c: '@triggerBody()?[\'validfromdate\']'
+                        StopSaleDate__c: '@triggerBody()?[\'validtodate\']'
                       }
-                      path: '/v3/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items/@{encodeURIComponent(encodeURIComponent(body(\'Get_Mapped_SalesForceId_for_Update\')?[\'ResultSets\'][\'Table1\'][0][\'SalesForceId\']))}'
+                      path: '/v3/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Product2\'))}/items/@{encodeURIComponent(encodeURIComponent(body(\'Get_Mapped_SalesForceId_for_Update\')?[\'ResultSets\'][\'Table1\'][0][\'SalesForceId\']))}'
+                    }
+                  }
+                  Get_Standard_PriceBook_Entry_1: {
+                    runAfter: {
+                      Get_OmniSync_Configurations: [
+                        'Succeeded'
+                      ]
+                    }
+                    type: 'ApiConnection'
+                    inputs: {
+                      host: {
+                        connection: {
+                          name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
+                        }
+                      }
+                      method: 'get'
+                      path: '/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'PricebookEntry\'))}/items'
+                      queries: {
+                        '$filter': 'Product2Id eq \'@{body(\'Update_Product\')?[\'Id\']}\' and Pricebook2Id eq \'@{first(body(\'Get_OmniSync_Configurations\')?[\'value\'])?[\'omnisync_sfpricebookstandardpricebook\']}\''
+                      }
+                    }
+                  }
+                  Update_PriceBook_Entry_1: {
+                    runAfter: {
+                      Get_Standard_PriceBook_Entry_1: [
+                        'Succeeded'
+                      ]
+                    }
+                    type: 'ApiConnection'
+                    inputs: {
+                      host: {
+                        connection: {
+                          name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
+                        }
+                      }
+                      method: 'patch'
+                      body: {
+                        UnitPrice: '@triggerBody()?[\'price\']'
+                        IsActive: true
+                        UseStandardPrice: false
+                        UnitCost__c: '@triggerBody()?[\'currentcost\']'
+                      }
+                      path: '/v3/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'PricebookEntry\'))}/items/@{encodeURIComponent(encodeURIComponent(first(body(\'Get_Standard_PriceBook_Entry_1\')?[\'value\'])?[\'Id\']))}'
+                    }
+                  }
+                  Get_OmniSync_Configurations: {
+                    runAfter: {
+                      Update_Product: [
+                        'Succeeded'
+                      ]
+                    }
+                    type: 'ApiConnection'
+                    inputs: {
+                      host: {
+                        connection: {
+                          name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                        }
+                      }
+                      method: 'get'
+                      headers: {
+                        prefer: 'odata.include-annotations=*'
+                        accept: 'application/json;odata.metadata=full'
+                        organization: 'https://org58211bdf.crm4.dynamics.com'
+                      }
+                      path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'omnisync_omnisyncconfigurations\'))}'
+                    }
+                  }
+                  Get_Standard_PriceBook_Entry_2: {
+                    runAfter: {
+                      Update_PriceBook_Entry_1: [
+                        'Succeeded'
+                      ]
+                    }
+                    type: 'ApiConnection'
+                    inputs: {
+                      host: {
+                        connection: {
+                          name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
+                        }
+                      }
+                      method: 'get'
+                      path: '/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'PricebookEntry\'))}/items'
+                      queries: {
+                        '$filter': 'Product2Id eq \'@{body(\'Update_Product\')?[\'Id\']}\' and Pricebook2Id eq \'@{first(body(\'Get_OmniSync_Configurations\')?[\'value\'])?[\'omnisync_sfstandardpricebook\']}\''
+                      }
+                    }
+                  }
+                  Update_PriceBook_Entry_2: {
+                    runAfter: {
+                      Get_Standard_PriceBook_Entry_2: [
+                        'Succeeded'
+                      ]
+                    }
+                    type: 'ApiConnection'
+                    inputs: {
+                      host: {
+                        connection: {
+                          name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
+                        }
+                      }
+                      method: 'patch'
+                      body: {
+                        UnitPrice: '@triggerBody()?[\'price\']'
+                        IsActive: true
+                        UseStandardPrice: false
+                        UnitCost__c: '@triggerBody()?[\'currentcost\']'
+                      }
+                      path: '/v3/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'PricebookEntry\'))}/items/@{encodeURIComponent(encodeURIComponent(first(body(\'Get_Standard_PriceBook_Entry_2\')?[\'value\'])?[\'Id\']))}'
                     }
                   }
                 }

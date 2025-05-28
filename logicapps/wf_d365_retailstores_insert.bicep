@@ -18,7 +18,7 @@ resource wf_d365_omnisync_retailstores_insert 'Microsoft.Logic/workflows@2019-05
     integrationAccount: {
       id: ia_omnisync_id
     }
-    definition: {
+     definition: {
       '$schema': 'https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#'
       contentVersion: '1.0.0.0'
       parameters: {
@@ -41,7 +41,7 @@ resource wf_d365_omnisync_retailstores_insert 'Microsoft.Logic/workflows@2019-05
               }
             }
             body: {
-              entityname: 'account'
+              entityname: 'cr989_retailstore'
               message: 1
               scope: 4
               version: 1
@@ -76,7 +76,7 @@ resource wf_d365_omnisync_retailstores_insert 'Microsoft.Logic/workflows@2019-05
                       content: '@triggerBody()'
                       integrationAccount: {
                         map: {
-                          name: 'D365AccountToCustomer'
+                          name: 'D365RetailStoreToStore'
                         }
                       }
                     }
@@ -138,62 +138,30 @@ resource wf_d365_omnisync_retailstores_insert 'Microsoft.Logic/workflows@2019-05
                   }
                   method: 'post'
                   body: {
-                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Customer\' AND SalesForceId IS NULL'
+                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Store\' AND SalesForceId IS NULL'
                     formalParameters: {
                       Name: 'NVARCHAR(100)'
                     }
                     actualParameters: {
-                      Name: '@triggerBody()?[\'name\']'
+                      Name: '@triggerBody()?[\'cr989_storename\']'
                     }
                   }
                   path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
                 }
               }
-              Check_if_AccountNumber_exists_in_SalesForce: {
+              Check_if_Store_exists_in_SalesForce: {
                 actions: {
-                  Create_Account: {
-                    type: 'ApiConnection'
-                    inputs: {
-                      host: {
-                        connection: {
-                          name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
-                        }
-                      }
-                      method: 'post'
-                      body: {
-                        Name: '@triggerBody()?[\'name\']'
-                        BillingStreet: '@triggerBody()?[\'address1_line1\']'
-                        BillingCity: '@triggerBody()?[\'address1_city\']'
-                        BillingState: '@triggerBody()?[\'address1_stateorprovince\']'
-                        BillingPostalCode: '@triggerBody()?[\'address1_postalcode\']'
-                        BillingCountry: '@triggerBody()?[\'address1_country\']'
-                        AccountNumber: '@triggerBody()?[\'accountnumber\']'
-                        Type: 'Customer'
-                        BillingLatitude: '@triggerBody()?[\'address1_latitude\']'
-                        BillingLongitude: '@triggerBody()?[\'address1_longitude\']'
-                        Phone: '@triggerBody()?[\'telephone1\']'
-                        Fax: '@triggerBody()?[\'fax\']'
-                        Website: '@triggerBody()?[\'websiteurl\']'
-                        Industry: 'Retail'
-                        AnnualRevenue: '@triggerBody()?[\'revenue\']'
-                        NumberOfEmployees: '@triggerBody()?[\'numberofemployees\']'
-                        CurrencyIsoCode: 'EUR'
-                        Email__c: '@triggerBody()?[\'emailaddress1\']'
-                      }
-                      path: '/v2/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items'
-                    }
-                  }
                   Delay_for_CDC_on_SalesForce_on_Fabric: {
                     runAfter: {
-                      Create_Account: [
+                      Create_RetailStore: [
                         'Succeeded'
                       ]
                     }
                     type: 'Wait'
                     inputs: {
                       interval: {
-                        count: 3
-                        unit: 'Minute'
+                        count: 0
+                        unit: 'Second'
                       }
                     }
                   }
@@ -212,12 +180,12 @@ resource wf_d365_omnisync_retailstores_insert 'Microsoft.Logic/workflows@2019-05
                       }
                       method: 'post'
                       body: {
-                        query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Customer\' AND D365Id IS NOT NULL'
+                        query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'RetailStore\' AND D365Id IS NOT NULL'
                         formalParameters: {
                           Name: 'NVARCHAR(100)'
                         }
                         actualParameters: {
-                          Name: '@triggerBody()?[\'accountnumber\']'
+                          Name: '@triggerBody()?[\'cr989_storename\']'
                         }
                       }
                       path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
@@ -233,7 +201,7 @@ resource wf_d365_omnisync_retailstores_insert 'Microsoft.Logic/workflows@2019-05
                     inputs: {
                       Operation: 'Update'
                       Entity: 'MasterDataMapping'
-                      Values: '{ "SalesForceIdToInsert": "@{body(\'Create_Account\')[\'Id\']}","D365Id": "@{triggerBody()?[\'accountid\']}"}'
+                      Values: '{ "SalesForceIdToInsert": "@{body(\'Create_RetailStore\')[\'Id\']}","D365Id": "@{triggerBody()?[\'cr989_retailstoreid\']}"}'
                       CreatedDate: '@utcNow()'
                       UpdatedDate: '@utcNow()'
                     }
@@ -261,6 +229,72 @@ resource wf_d365_omnisync_retailstores_insert 'Microsoft.Logic/workflows@2019-05
                       }
                     }
                   }
+                  Get_SalesForce_Account: {
+                    runAfter: {
+                      Get_Account: [
+                        'Succeeded'
+                      ]
+                    }
+                    type: 'ApiConnection'
+                    inputs: {
+                      host: {
+                        connection: {
+                          name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
+                        }
+                      }
+                      method: 'get'
+                      path: '/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items'
+                      queries: {
+                        '$filter': 'Name eq \'@{body(\'Get_Account\')?[\'name\']}\''
+                      }
+                    }
+                  }
+                  Get_Account: {
+                    type: 'ApiConnection'
+                    inputs: {
+                      host: {
+                        connection: {
+                          name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                        }
+                      }
+                      method: 'get'
+                      headers: {
+                        prefer: 'odata.include-annotations=*'
+                        accept: 'application/json;odata.metadata=full'
+                        organization: 'https://org58211bdf.crm4.dynamics.com'
+                      }
+                      path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'accounts\'))}(@{encodeURIComponent(encodeURIComponent(triggerBody()?[\'_cr989_account_value\']))})'
+                    }
+                  }
+                  Create_RetailStore: {
+                    runAfter: {
+                      Get_SalesForce_Account: [
+                        'Succeeded'
+                      ]
+                    }
+                    type: 'ApiConnection'
+                    inputs: {
+                      host: {
+                        connection: {
+                          name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
+                        }
+                      }
+                      method: 'post'
+                      body: {
+                        AccountId__c: '@first(body(\'Get_SalesForce_Account\')?[\'value\'])?[\'Id\']'
+                        StoreType__c: '@triggerBody()?[\'_cr989_storetype_label\']'
+                        StoreCode__c: '@triggerBody()?[\'cr989_storecode\']'
+                        Name: '@triggerBody()?[\'cr989_storename\']'
+                        CurrencyIsoCode: 'EUR'
+                        Description__c: '@triggerBody()?[\'cr989_storedescription\']'
+                        EmployeeCount__c: '@triggerBody()?[\'cr989_employeecount\']'
+                        Fax__c: '@triggerBody()?[\'cr989_storefax\']'
+                        Phone__c: '@triggerBody()?[\'cr989_storephone\']'
+                        StoreTypeId__c: '@triggerBody()?[\'cr989_storetype\']'
+                      }
+                      path: '/v2/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'RetailStore__c\'))}/items'
+                    }
+                  }
                 }
                 runAfter: {
                   Get_Mapped_SalesForceId: [
@@ -269,7 +303,7 @@ resource wf_d365_omnisync_retailstores_insert 'Microsoft.Logic/workflows@2019-05
                 }
                 else: {
                   actions: {
-                    Update_Status_Account: {
+                    Update_Status_RetailStore: {
                       type: 'ApiConnection'
                       inputs: {
                         host: {
@@ -286,7 +320,7 @@ resource wf_d365_omnisync_retailstores_insert 'Microsoft.Logic/workflows@2019-05
                           accept: 'application/json;odata.metadata=full'
                           organization: 'https://org58211bdf.crm4.dynamics.com'
                         }
-                        path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'accounts\'))}(@{encodeURIComponent(encodeURIComponent(triggerBody()?[\'accountnumber\']))})'
+                        path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'cr989_retailstores\'))}(@{encodeURIComponent(encodeURIComponent(triggerBody()?[\'cr989_retailstoreid\']))})'
                       }
                     }
                   }

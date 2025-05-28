@@ -41,7 +41,7 @@ resource wf_d365_omnisync_products_insert 'Microsoft.Logic/workflows@2019-05-01'
               }
             }
             body: {
-              entityname: 'account'
+              entityname: 'product'
               message: 1
               scope: 4
               version: 1
@@ -76,7 +76,7 @@ resource wf_d365_omnisync_products_insert 'Microsoft.Logic/workflows@2019-05-01'
                       content: '@triggerBody()'
                       integrationAccount: {
                         map: {
-                          name: 'D365AccountToCustomer'
+                          name: 'D365ProductToProduct'
                         }
                       }
                     }
@@ -138,7 +138,7 @@ resource wf_d365_omnisync_products_insert 'Microsoft.Logic/workflows@2019-05-01'
                   }
                   method: 'post'
                   body: {
-                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Customer\' AND SalesForceId IS NULL'
+                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Product\' AND SalesForceId IS NULL'
                     formalParameters: {
                       Name: 'NVARCHAR(100)'
                     }
@@ -149,9 +149,9 @@ resource wf_d365_omnisync_products_insert 'Microsoft.Logic/workflows@2019-05-01'
                   path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
                 }
               }
-              Check_if_AccountNumber_exists_in_SalesForce: {
+              Check_if_Product_code_exists_in_SalesForce: {
                 actions: {
-                  Create_Account: {
+                  Create_Product: {
                     type: 'ApiConnection'
                     inputs: {
                       host: {
@@ -162,30 +162,33 @@ resource wf_d365_omnisync_products_insert 'Microsoft.Logic/workflows@2019-05-01'
                       method: 'post'
                       body: {
                         Name: '@triggerBody()?[\'name\']'
-                        BillingStreet: '@triggerBody()?[\'address1_line1\']'
-                        BillingCity: '@triggerBody()?[\'address1_city\']'
-                        BillingState: '@triggerBody()?[\'address1_stateorprovince\']'
-                        BillingPostalCode: '@triggerBody()?[\'address1_postalcode\']'
-                        BillingCountry: '@triggerBody()?[\'address1_country\']'
-                        AccountNumber: '@triggerBody()?[\'accountnumber\']'
-                        Type: 'Customer'
-                        BillingLatitude: '@triggerBody()?[\'address1_latitude\']'
-                        BillingLongitude: '@triggerBody()?[\'address1_longitude\']'
-                        Phone: '@triggerBody()?[\'telephone1\']'
-                        Fax: '@triggerBody()?[\'fax\']'
-                        Website: '@triggerBody()?[\'websiteurl\']'
-                        Industry: 'Retail'
-                        AnnualRevenue: '@triggerBody()?[\'revenue\']'
-                        NumberOfEmployees: '@triggerBody()?[\'numberofemployees\']'
+                        ProductCode: '@triggerBody()?[\'productnumber\']'
+                        Description: '@triggerBody()?[\'description\']'
+                        IsActive: true
+                        Family: '@triggerBody()?[\'_omnisync_category_label\']'
                         CurrencyIsoCode: 'EUR'
-                        Email__c: '@triggerBody()?[\'emailaddress1\']'
+                        FamilyId__c: '@triggerBody()?[\'omnisync_category\']'
+                        Manufacturer__c: '@triggerBody()?[\'omnisync_manufacturer\']'
+                        Brand__c: '@triggerBody()?[\'omnisync_brand\']'
+                        Class__c: '@triggerBody()?[\'_omnisync_class_label\']'
+                        ClassId__c: '@triggerBody()?[\'omnisync_class\']'
+                        ColorId__c: '@triggerBody()?[\'omnisync_color\']'
+                        Color__c: '@triggerBody()?[\'_omnisync_color_label\']'
+                        Size__c: '@triggerBody()?[\'size\']'
+                        SizeUnitOfMeasure__c: '@triggerBody()?[\'_omnisync_sizeunitofmeasure_label\']'
+                        SizeUnitOfMeasureId__c: '@triggerBody()?[\'omnisync_sizeunitofmeasure\']'
+                        Weight__c: '@triggerBody()?[\'omnisync_weight\']'
+                        WeightUnitOfMeasure__c: '@triggerBody()?[\'_omnisync_weightunitofmeasure_label\']'
+                        WeightUnitOfMeasureId__c: '@triggerBody()?[\'omnisync_weightunitofmeasure\']'
+                        AvailableForSaleDate__c: '@triggerBody()?[\'validfromdate\']'
+                        StopSaleDate__c: '@triggerBody()?[\'validtodate\']'
                       }
-                      path: '/v2/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items'
+                      path: '/v2/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Product2\'))}/items'
                     }
                   }
                   Delay_for_CDC_on_SalesForce_on_Fabric: {
                     runAfter: {
-                      Create_Account: [
+                      Create_Standard_PriceBook_Entry_2: [
                         'Succeeded'
                       ]
                     }
@@ -212,12 +215,12 @@ resource wf_d365_omnisync_products_insert 'Microsoft.Logic/workflows@2019-05-01'
                       }
                       method: 'post'
                       body: {
-                        query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Customer\' AND D365Id IS NOT NULL'
+                        query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Product\' AND D365Id IS NOT NULL'
                         formalParameters: {
                           Name: 'NVARCHAR(100)'
                         }
                         actualParameters: {
-                          Name: '@triggerBody()?[\'accountnumber\']'
+                          Name: '@triggerBody()?[\'productnumber\']'
                         }
                       }
                       path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
@@ -233,7 +236,7 @@ resource wf_d365_omnisync_products_insert 'Microsoft.Logic/workflows@2019-05-01'
                     inputs: {
                       Operation: 'Update'
                       Entity: 'MasterDataMapping'
-                      Values: '{ "SalesForceIdToInsert": "@{body(\'Create_Account\')[\'Id\']}","D365Id": "@{triggerBody()?[\'accountid\']}"}'
+                      Values: '{ "SalesForceIdToInsert": "@{body(\'Create_Product\')[\'Id\']}","D365Id": "@{triggerBody()?[\'productid\']}"}'
                       CreatedDate: '@utcNow()'
                       UpdatedDate: '@utcNow()'
                     }
@@ -261,6 +264,80 @@ resource wf_d365_omnisync_products_insert 'Microsoft.Logic/workflows@2019-05-01'
                       }
                     }
                   }
+                  Create_Standard_PriceBook_Entry_2: {
+                    runAfter: {
+                      Create_Standard_PriceBook_Entry_1: [
+                        'Succeeded'
+                      ]
+                    }
+                    type: 'ApiConnection'
+                    inputs: {
+                      host: {
+                        connection: {
+                          name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
+                        }
+                      }
+                      method: 'post'
+                      body: {
+                        UnitPrice: '@triggerBody()?[\'price\']'
+                        Pricebook2Id: '@first(body(\'Get_OmniSync_Configurations\')?[\'value\'])?[\'omnisync_sfstandardpricebook\']'
+                        Product2Id: '@{body(\'Create_Product\')?[\'Id\']}'
+                        CurrencyIsoCode: 'EUR'
+                        IsActive: true
+                        UseStandardPrice: false
+                        UnitCost__c: '@triggerBody()?[\'currentcost\']'
+                      }
+                      path: '/v2/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'PricebookEntry\'))}/items'
+                    }
+                  }
+                  Get_OmniSync_Configurations: {
+                    runAfter: {
+                      Create_Product: [
+                        'Succeeded'
+                      ]
+                    }
+                    type: 'ApiConnection'
+                    inputs: {
+                      host: {
+                        connection: {
+                          name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                        }
+                      }
+                      method: 'get'
+                      headers: {
+                        prefer: 'odata.include-annotations=*'
+                        accept: 'application/json;odata.metadata=full'
+                        organization: 'https://org58211bdf.crm4.dynamics.com'
+                      }
+                      path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'omnisync_omnisyncconfigurations\'))}'
+                    }
+                  }
+                  Create_Standard_PriceBook_Entry_1: {
+                    runAfter: {
+                      Get_OmniSync_Configurations: [
+                        'Succeeded'
+                      ]
+                    }
+                    type: 'ApiConnection'
+                    inputs: {
+                      host: {
+                        connection: {
+                          name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
+                        }
+                      }
+                      method: 'post'
+                      body: {
+                        UnitPrice: '@triggerBody()?[\'price\']'
+                        Pricebook2Id: '@first(body(\'Get_OmniSync_Configurations\')?[\'value\'])?[\'omnisync_sfpricebookstandardpricebook\']'
+                        Product2Id: '@{body(\'Create_Product\')?[\'Id\']}'
+                        CurrencyIsoCode: 'EUR'
+                        IsActive: true
+                        UseStandardPrice: false
+                        UnitCost__c: '@triggerBody()?[\'currentcost\']'
+                      }
+                      path: '/v2/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'PricebookEntry\'))}/items'
+                    }
+                  }
                 }
                 runAfter: {
                   Get_Mapped_SalesForceId: [
@@ -269,7 +346,7 @@ resource wf_d365_omnisync_products_insert 'Microsoft.Logic/workflows@2019-05-01'
                 }
                 else: {
                   actions: {
-                    Update_Status_Account: {
+                    Update_Status_Product: {
                       type: 'ApiConnection'
                       inputs: {
                         host: {
@@ -286,7 +363,7 @@ resource wf_d365_omnisync_products_insert 'Microsoft.Logic/workflows@2019-05-01'
                           accept: 'application/json;odata.metadata=full'
                           organization: 'https://org58211bdf.crm4.dynamics.com'
                         }
-                        path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'accounts\'))}(@{encodeURIComponent(encodeURIComponent(triggerBody()?[\'accountnumber\']))})'
+                        path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'products\'))}(@{encodeURIComponent(encodeURIComponent(triggerBody()?[\'productid\']))})'
                       }
                     }
                   }

@@ -44,7 +44,7 @@ resource wf_d365_omnisync_orders_delete 'Microsoft.Logic/workflows@2019-05-01' =
               }
             }
             body: {
-              entityname: 'account'
+              entityname: 'salesorder'
               message: 2
               scope: 4
               version: 1
@@ -70,89 +70,7 @@ resource wf_d365_omnisync_orders_delete 'Microsoft.Logic/workflows@2019-05-01' =
           }
           else: {
             actions: {
-              Send_to_Fabric: {
-                actions: {
-                  Transform_JSON_To_JSON: {
-                    type: 'Liquid'
-                    kind: 'JsonToJson'
-                    inputs: {
-                      content: '@triggerBody()'
-                      integrationAccount: {
-                        map: {
-                          name: 'D365AccountToCustomer'
-                        }
-                      }
-                    }
-                  }
-                  Fix_Transformed_JSON: {
-                    runAfter: {
-                      Transform_JSON_To_JSON: [
-                        'Succeeded'
-                      ]
-                    }
-                    type: 'Compose'
-                    inputs: '@json(replace(replace(replace(string(body(\'Transform_JSON_To_JSON\')),   \'"now"\',concat(\'"\', utcNow(),\'"\')),\'\t\',\'\'),\'\r\n\',\'\'))'
-                  }
-                  Create_CDC_Record: {
-                    runAfter: {
-                      Fix_Transformed_JSON: [
-                        'Succeeded'
-                      ]
-                    }
-                    type: 'SetVariable'
-                    inputs: {
-                      name: 'CDCRecord'
-                      value: '@outputs(\'Fix_Transformed_JSON\')'
-                    }
-                  }
-                  Send_CDC_event: {
-                    runAfter: {
-                      Create_CDC_Record: [
-                        'Succeeded'
-                      ]
-                    }
-                    type: 'ApiConnection'
-                    inputs: {
-                      host: {
-                        connection: {
-                          name: '@parameters(\'$connections\')[\'eventhubs\'][\'connectionId\']'
-                        }
-                      }
-                      method: 'post'
-                      body: {
-                        ContentData: '@base64(variables(\'CDCRecord\'))'
-                      }
-                      path: '/@{encodeURIComponent(\'eh-omnisync-prod-ne-01\')}/events'
-                      queries: {
-                        partitionKey: '0'
-                      }
-                    }
-                  }
-                }
-                type: 'Scope'
-              }
-              Get_Mapped_SalesForceId: {
-                type: 'ApiConnection'
-                inputs: {
-                  host: {
-                    connection: {
-                      name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
-                    }
-                  }
-                  method: 'post'
-                  body: {
-                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE D365Id=@D365Id AND Entity=\'Customer\' AND SalesForceId IS NOT NULL'
-                    formalParameters: {
-                      D365Id: 'NVARCHAR(100)'
-                    }
-                    actualParameters: {
-                      D365Id: '@triggerBody()?[\'accountid\']'
-                    }
-                  }
-                  path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
-                }
-              }
-              Check_if_Mapping_Customer_row_exists_: {
+              Check_if_Mapping_Order_row_exists_: {
                 actions: {
                   Delete_Account: {
                     type: 'ApiConnection'
@@ -163,23 +81,23 @@ resource wf_d365_omnisync_orders_delete 'Microsoft.Logic/workflows@2019-05-01' =
                         }
                       }
                       method: 'delete'
-                      path: '/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items/@{encodeURIComponent(encodeURIComponent(body(\'Get_Mapped_SalesForceId\')?[\'ResultSets\'][\'Table1\'][0][\'SalesForceId\']))}'
+                      path: '/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Order\'))}/items/@{encodeURIComponent(encodeURIComponent(first(body(\'Get_Order\')?[\'value\'])?[\'Id\']))}'
                     }
                   }
                 }
                 runAfter: {
-                  Get_Mapped_SalesForceId: [
+                  Get_Order: [
                     'Succeeded'
                   ]
                 }
                 else: {
                   actions: {
-                    Response_Account_not_found: {
+                    Response_Order_not_found: {
                       type: 'Response'
                       kind: 'Http'
                       inputs: {
                         statusCode: 404
-                        body: 'Account with D365Id  @{triggerBody()?[\'accountid\']} to delete not found on Dynamics365'
+                        body: 'Order with D365Id  @{triggerBody()?[\'omnisync_salesforceordernumber\']} to delete not found on Dynamics365'
                       }
                     }
                   }
@@ -189,14 +107,29 @@ resource wf_d365_omnisync_orders_delete 'Microsoft.Logic/workflows@2019-05-01' =
                     {
                       not: {
                         equals: [
-                          '@length(string(body(\'Get_Mapped_SalesForceId\')?[\'resultsets\']))'
-                          2
+                          '@length(body(\'Get_Order\')?[\'value\'])'
+                          0
                         ]
                       }
                     }
                   ]
                 }
                 type: 'If'
+              }
+              Get_Order: {
+                type: 'ApiConnection'
+                inputs: {
+                  host: {
+                    connection: {
+                      name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
+                    }
+                  }
+                  method: 'get'
+                  path: '/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Order\'))}/items'
+                  queries: {
+                    '$filter': 'OrderNumber eq \'@{triggerBody()?[\'omnisync_salesforceordernumber\']}\''
+                  }
+                }
               }
             }
           }

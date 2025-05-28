@@ -40,7 +40,7 @@ resource wf_d365_omnisync_accounts_delete 'Microsoft.Logic/workflows@2019-05-01'
           inputs: {
             host: {
               connection: {
-                name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                name: '@parameters(\'$connections\')[\'commondataservice-1\'][\'connectionId\']'
               }
             }
             body: {
@@ -159,7 +159,7 @@ resource wf_d365_omnisync_accounts_delete 'Microsoft.Logic/workflows@2019-05-01'
                     inputs: {
                       host: {
                         connection: {
-                          name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
+                          name: '@parameters(\'$connections\')[\'salesforce-1\'][\'connectionId\']'
                         }
                       }
                       method: 'delete'
@@ -219,7 +219,7 @@ resource wf_d365_omnisync_accounts_delete 'Microsoft.Logic/workflows@2019-05-01'
               inputs: {
                 host: {
                   connection: {
-                    name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                    name: '@parameters(\'$connections\')[\'commondataservice-1\'][\'connectionId\']'
                   }
                 }
                 method: 'get'

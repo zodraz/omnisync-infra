@@ -40,7 +40,7 @@ resource wf_d365_omnisync_orderproducts_delete 'Microsoft.Logic/workflows@2019-0
               }
             }
             body: {
-              entityname: 'account'
+              entityname: 'salesorderdetail'
               message: 2
               scope: 4
               version: 1
@@ -68,42 +68,9 @@ resource wf_d365_omnisync_orderproducts_delete 'Microsoft.Logic/workflows@2019-0
             actions: {
               Send_to_Fabric: {
                 actions: {
-                  Transform_JSON_To_JSON: {
-                    type: 'Liquid'
-                    kind: 'JsonToJson'
-                    inputs: {
-                      content: '@triggerBody()'
-                      integrationAccount: {
-                        map: {
-                          name: 'D365AccountToCustomer'
-                        }
-                      }
-                    }
-                  }
-                  Fix_Transformed_JSON: {
-                    runAfter: {
-                      Transform_JSON_To_JSON: [
-                        'Succeeded'
-                      ]
-                    }
-                    type: 'Compose'
-                    inputs: '@json(replace(replace(replace(string(body(\'Transform_JSON_To_JSON\')),   \'"now"\',concat(\'"\', utcNow(),\'"\')),\'\t\',\'\'),\'\r\n\',\'\'))'
-                  }
-                  Create_CDC_Record: {
-                    runAfter: {
-                      Fix_Transformed_JSON: [
-                        'Succeeded'
-                      ]
-                    }
-                    type: 'SetVariable'
-                    inputs: {
-                      name: 'CDCRecord'
-                      value: '@outputs(\'Fix_Transformed_JSON\')'
-                    }
-                  }
                   Send_CDC_event: {
                     runAfter: {
-                      Create_CDC_Record: [
+                      Create_CDC_Fabric: [
                         'Succeeded'
                       ]
                     }
@@ -116,7 +83,7 @@ resource wf_d365_omnisync_orderproducts_delete 'Microsoft.Logic/workflows@2019-0
                       }
                       method: 'post'
                       body: {
-                        ContentData: '@base64(variables(\'CDCRecord\'))'
+                        ContentData: '@base64(outputs(\'Create_CDC_Fabric\'))'
                       }
                       path: '/@{encodeURIComponent(\'eh-omnisync-prod-ne-01\')}/events'
                       queries: {
@@ -124,10 +91,20 @@ resource wf_d365_omnisync_orderproducts_delete 'Microsoft.Logic/workflows@2019-0
                       }
                     }
                   }
+                  Create_CDC_Fabric: {
+                    type: 'Compose'
+                    inputs: {
+                      Operation: 'Delete'
+                      Entity: 'SalesOrders'
+                      Values: '{ "D365Id": "@{triggerBody()?[\'salesorderdetailid\']}","DateKey": "","StoreKey": "","ProductKey": "","CurrencyKey": "EUR","CustomerKey": "","SalesOrderNumber": "", "CreatedDate":"@{utcNow()}","UpdatedDate": "@{utcNow()}"}'
+                      CreatedDate: '@utcNow()'
+                      UpdatedDate: '@utcNow()'
+                    }
+                  }
                 }
                 type: 'Scope'
               }
-              Get_Mapped_SalesForceId: {
+              Get_Mapped_SalesForceId_for_SalesOrder: {
                 type: 'ApiConnection'
                 inputs: {
                   host: {
@@ -137,20 +114,20 @@ resource wf_d365_omnisync_orderproducts_delete 'Microsoft.Logic/workflows@2019-0
                   }
                   method: 'post'
                   body: {
-                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE D365Id=@D365Id AND Entity=\'Customer\' AND SalesForceId IS NOT NULL'
+                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE D365Id= @D365Id AND Entity=\'SalesOrders\' AND SalesForceId IS NOT NULL AND D365Id IS NOT NULL'
                     formalParameters: {
                       D365Id: 'NVARCHAR(100)'
                     }
                     actualParameters: {
-                      D365Id: '@triggerBody()?[\'accountid\']'
+                      D365Id: '@triggerBody()?[\'salesorderdetailid\']'
                     }
                   }
                   path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
                 }
               }
-              Check_if_Mapping_Customer_row_exists_: {
+              Check_if_Mapping_SalesOrder_row_exists_: {
                 actions: {
-                  Delete_Account: {
+                  Delete_SalesOrder: {
                     type: 'ApiConnection'
                     inputs: {
                       host: {
@@ -159,23 +136,23 @@ resource wf_d365_omnisync_orderproducts_delete 'Microsoft.Logic/workflows@2019-0
                         }
                       }
                       method: 'delete'
-                      path: '/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items/@{encodeURIComponent(encodeURIComponent(body(\'Get_Mapped_SalesForceId\')?[\'ResultSets\'][\'Table1\'][0][\'SalesForceId\']))}'
+                      path: '/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'OrderItem\'))}/items/@{encodeURIComponent(encodeURIComponent(body(\'Get_Mapped_SalesForceId_for_SalesOrder\')?[\'ResultSets\'][\'Table1\'][0][\'SalesForceId\']))}'
                     }
                   }
                 }
                 runAfter: {
-                  Get_Mapped_SalesForceId: [
+                  Get_Mapped_SalesForceId_for_SalesOrder: [
                     'Succeeded'
                   ]
                 }
                 else: {
                   actions: {
-                    Response_Account_not_found: {
+                    Response_SalesOrders_not_found: {
                       type: 'Response'
                       kind: 'Http'
                       inputs: {
                         statusCode: 404
-                        body: 'Account with D365Id  @{triggerBody()?[\'accountid\']} to delete not found on Dynamics365'
+                        body: 'SalesOrder with D365Id  @{triggerBody()?[\'salesorderdetailid\']} to delete not found on Dynamics365'
                       }
                     }
                   }
@@ -185,7 +162,7 @@ resource wf_d365_omnisync_orderproducts_delete 'Microsoft.Logic/workflows@2019-0
                     {
                       not: {
                         equals: [
-                          '@length(string(body(\'Get_Mapped_SalesForceId\')?[\'resultsets\']))'
+                          '@length(string(body(\'Get_Mapped_SalesForceId_for_SalesOrder\')?[\'resultsets\']))'
                           2
                         ]
                       }
@@ -257,24 +234,8 @@ resource wf_d365_omnisync_orderproducts_delete 'Microsoft.Logic/workflows@2019-0
               }
             }
           }
-          runAfter: {
-            Initialize_CDC_record: [
-              'Succeeded'
-            ]
-          }
-          type: 'Scope'
-        }
-        Initialize_CDC_record: {
           runAfter: {}
-          type: 'InitializeVariable'
-          inputs: {
-            variables: [
-              {
-                name: 'CDCRecord'
-                type: 'object'
-              }
-            ]
-          }
+          type: 'Scope'
         }
       }
       outputs: {}

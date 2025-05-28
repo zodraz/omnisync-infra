@@ -40,7 +40,7 @@ resource wf_d365_omnisync_orderproducts_insert 'Microsoft.Logic/workflows@2019-0
               }
             }
             body: {
-              entityname: 'account'
+              entityname: 'salesorderdetail'
               message: 1
               scope: 4
               version: 1
@@ -68,42 +68,9 @@ resource wf_d365_omnisync_orderproducts_insert 'Microsoft.Logic/workflows@2019-0
             actions: {
               Send_to_Fabric: {
                 actions: {
-                  Transform_JSON_To_JSON: {
-                    type: 'Liquid'
-                    kind: 'JsonToJson'
-                    inputs: {
-                      content: '@triggerBody()'
-                      integrationAccount: {
-                        map: {
-                          name: 'D365AccountToCustomer'
-                        }
-                      }
-                    }
-                  }
-                  Fix_Transformed_JSON: {
-                    runAfter: {
-                      Transform_JSON_To_JSON: [
-                        'Succeeded'
-                      ]
-                    }
-                    type: 'Compose'
-                    inputs: '@json(replace(replace(replace(string(body(\'Transform_JSON_To_JSON\')),   \'"now"\',concat(\'"\', utcNow(),\'"\')),\'\t\',\'\'),\'\r\n\',\'\'))'
-                  }
-                  Create_CDC_Record: {
-                    runAfter: {
-                      Fix_Transformed_JSON: [
-                        'Succeeded'
-                      ]
-                    }
-                    type: 'SetVariable'
-                    inputs: {
-                      name: 'CDCRecord'
-                      value: '@outputs(\'Fix_Transformed_JSON\')'
-                    }
-                  }
                   Send_CDC_event: {
                     runAfter: {
-                      Create_CDC_Record: [
+                      Create_CDC_Fabric: [
                         'Succeeded'
                       ]
                     }
@@ -116,7 +83,7 @@ resource wf_d365_omnisync_orderproducts_insert 'Microsoft.Logic/workflows@2019-0
                       }
                       method: 'post'
                       body: {
-                        ContentData: '@base64(variables(\'CDCRecord\'))'
+                        ContentData: '@base64(outputs(\'Create_CDC_Fabric\'))'
                       }
                       path: '/@{encodeURIComponent(\'eh-omnisync-prod-ne-01\')}/events'
                       queries: {
@@ -124,33 +91,32 @@ resource wf_d365_omnisync_orderproducts_insert 'Microsoft.Logic/workflows@2019-0
                       }
                     }
                   }
+                  Create_CDC_Fabric: {
+                    type: 'Compose'
+                    inputs: {
+                      Operation: 'Create'
+                      Entity: 'SalesOrders'
+                      Values: '{ "D365Id": "@{triggerBody()?[\'salesorderdetailid\']}","DateKey": "@{formatDateTime(body(\'Get_Order\')?[\'requestdeliveryby\'], \'yyyy-MM-dd\')}","StoreKey": "@{body(\'Get_Order\')?[\'_cr989_retailstore_value\']}","ProductKey": "@{body(\'Get_Product\')?[\'productid\']}","CurrencyKey": "EUR","CustomerKey": "@{body(\'Get_Order\')?[\'_customerid_value\']}","SalesOrderNumber": "@{body(\'Get_Order\')?[\'ordernumber\']}","SalesOrderLineNumber": "@{triggerBody()?[\'omnisync_lineitemnumber\']}","SalesQuantity": "@{triggerBody()?[\'quantity\']}","UnitCost": "@{body(\'Get_Product\')?[\'currentcost\']}","UnitPrice": "@{triggerBody()?[\'priceperunit\']}","CreatedDate": "@{triggerBody()?[\'createdon\']}","UpdatedDate": "@{triggerBody()?[\'modifiedon\']}"}'
+                      CreatedDate: '@utcNow()'
+                      UpdatedDate: '@utcNow()'
+                    }
+                  }
+                }
+                runAfter: {
+                  GetSalesForce__Product: [
+                    'Succeeded'
+                  ]
                 }
                 type: 'Scope'
               }
-              Get_Mapped_SalesForceId: {
-                type: 'ApiConnection'
-                inputs: {
-                  host: {
-                    connection: {
-                      name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
-                    }
-                  }
-                  method: 'post'
-                  body: {
-                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Customer\' AND SalesForceId IS NULL'
-                    formalParameters: {
-                      Name: 'NVARCHAR(100)'
-                    }
-                    actualParameters: {
-                      Name: '@triggerBody()?[\'name\']'
-                    }
-                  }
-                  path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
-                }
-              }
-              Check_if_AccountNumber_exists_in_SalesForce: {
+              Check_if_Order_exists_in_SalesForce: {
                 actions: {
-                  Create_Account: {
+                  Create_SalesOrder: {
+                    runAfter: {
+                      Get_Price_Book_Entry: [
+                        'Succeeded'
+                      ]
+                    }
                     type: 'ApiConnection'
                     inputs: {
                       host: {
@@ -160,31 +126,23 @@ resource wf_d365_omnisync_orderproducts_insert 'Microsoft.Logic/workflows@2019-0
                       }
                       method: 'post'
                       body: {
-                        Name: '@triggerBody()?[\'name\']'
-                        BillingStreet: '@triggerBody()?[\'address1_line1\']'
-                        BillingCity: '@triggerBody()?[\'address1_city\']'
-                        BillingState: '@triggerBody()?[\'address1_stateorprovince\']'
-                        BillingPostalCode: '@triggerBody()?[\'address1_postalcode\']'
-                        BillingCountry: '@triggerBody()?[\'address1_country\']'
-                        AccountNumber: '@triggerBody()?[\'accountnumber\']'
-                        Type: 'Customer'
-                        BillingLatitude: '@triggerBody()?[\'address1_latitude\']'
-                        BillingLongitude: '@triggerBody()?[\'address1_longitude\']'
-                        Phone: '@triggerBody()?[\'telephone1\']'
-                        Fax: '@triggerBody()?[\'fax\']'
-                        Website: '@triggerBody()?[\'websiteurl\']'
-                        Industry: 'Retail'
-                        AnnualRevenue: '@triggerBody()?[\'revenue\']'
-                        NumberOfEmployees: '@triggerBody()?[\'numberofemployees\']'
-                        CurrencyIsoCode: 'EUR'
-                        Email__c: '@triggerBody()?[\'emailaddress1\']'
+                        Quantity: '@triggerBody()?[\'quantity\']'
+                        Product2Id: '@first(body(\'GetSalesForce__Product\')?[\'value\'])[\'Id\']'
+                        OrderId: '@body(\'Get_Mapped_SalesForceId_for_Order\')?[\'resultsets\']?[\'Table1\']?[0]?[\'SalesForceId\']'
+                        PricebookEntryId: '@first(body(\'Get_Price_Book_Entry\')?[\'value\'])?[\'Id\']'
+                        UnitPrice: '@triggerBody()?[\'priceperunit\']'
+                        ListPrice: '@triggerBody()?[\'priceperunit\']'
+                        ServiceDate: '@body(\'Get_Order\')?[\'requestdeliveryby\']'
+                        Description: '@triggerBody()?[\'salesorderdetailname\']'
+                        OrderItemLineNumber__c: 50
+                        CostPrice__c: '@body(\'Get_Product\')?[\'currentcost\']'
                       }
-                      path: '/v2/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items'
+                      path: '/v2/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'OrderItem\'))}/items'
                     }
                   }
                   Delay_for_CDC_on_SalesForce_on_Fabric: {
                     runAfter: {
-                      Create_Account: [
+                      Create_SalesOrder: [
                         'Succeeded'
                       ]
                     }
@@ -211,12 +169,12 @@ resource wf_d365_omnisync_orderproducts_insert 'Microsoft.Logic/workflows@2019-0
                       }
                       method: 'post'
                       body: {
-                        query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'Customer\' AND D365Id IS NOT NULL'
+                        query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name=@Name AND Entity=\'SalesOrders\' AND D365Id IS NOT NULL'
                         formalParameters: {
                           Name: 'NVARCHAR(100)'
                         }
                         actualParameters: {
-                          Name: '@triggerBody()?[\'accountnumber\']'
+                          Name: '@{triggerBody()?[\'lineitemnumber\']}-@{body(\'Get_Order\')?[\'ordernumber\']}-'
                         }
                       }
                       path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
@@ -232,7 +190,7 @@ resource wf_d365_omnisync_orderproducts_insert 'Microsoft.Logic/workflows@2019-0
                     inputs: {
                       Operation: 'Update'
                       Entity: 'MasterDataMapping'
-                      Values: '{ "SalesForceIdToInsert": "@{body(\'Create_Account\')[\'Id\']}","D365Id": "@{triggerBody()?[\'accountid\']}"}'
+                      Values: '{ "SalesForceIdToInsert": "@{body(\'Create_SalesOrder\')?[\'Id\']}","D365Id": "@{triggerBody()?[\'salesorderdetailid\']}"}'
                       CreatedDate: '@utcNow()'
                       UpdatedDate: '@utcNow()'
                     }
@@ -260,15 +218,30 @@ resource wf_d365_omnisync_orderproducts_insert 'Microsoft.Logic/workflows@2019-0
                       }
                     }
                   }
+                  Get_Price_Book_Entry: {
+                    type: 'ApiConnection'
+                    inputs: {
+                      host: {
+                        connection: {
+                          name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
+                        }
+                      }
+                      method: 'get'
+                      path: '/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'PricebookEntry\'))}/items'
+                      queries: {
+                        '$filter': 'Name eq \'@{body(\'Get_Product\')?[\'name\']}\' and Pricebook2Id eq \'@{first(body(\'Get_OmniSync_Configuration\')?[\'value\'])?[\'omnisync_sfstandardpricebook\']}\''
+                      }
+                    }
+                  }
                 }
                 runAfter: {
-                  Get_Mapped_SalesForceId: [
+                  Get_Mapped_SalesForceId_for_Order: [
                     'Succeeded'
                   ]
                 }
                 else: {
                   actions: {
-                    Update_Status_Account: {
+                    Update_Status_Order: {
                       type: 'ApiConnection'
                       inputs: {
                         host: {
@@ -285,7 +258,7 @@ resource wf_d365_omnisync_orderproducts_insert 'Microsoft.Logic/workflows@2019-0
                           accept: 'application/json;odata.metadata=full'
                           organization: 'https://org58211bdf.crm4.dynamics.com'
                         }
-                        path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'accounts\'))}(@{encodeURIComponent(encodeURIComponent(triggerBody()?[\'accountnumber\']))})'
+                        path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'salesorders\'))}(@{encodeURIComponent(encodeURIComponent(triggerBody()?[\'salesorderid\']))})'
                       }
                     }
                   }
@@ -293,14 +266,123 @@ resource wf_d365_omnisync_orderproducts_insert 'Microsoft.Logic/workflows@2019-0
                 expression: {
                   and: [
                     {
-                      equals: [
-                        '@length(string(body(\'Get_Mapped_SalesForceId\')?[\'resultsets\']))'
-                        2
-                      ]
+                      not: {
+                        equals: [
+                          '@length(string(body(\'Get_Mapped_SalesForceId_for_Order\')?[\'resultsets\']))'
+                          2
+                        ]
+                      }
                     }
                   ]
                 }
                 type: 'If'
+              }
+              Get_Order: {
+                runAfter: {
+                  Get_OmniSync_Configuration: [
+                    'Succeeded'
+                  ]
+                }
+                type: 'ApiConnection'
+                inputs: {
+                  host: {
+                    connection: {
+                      name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                    }
+                  }
+                  method: 'get'
+                  headers: {
+                    prefer: 'odata.include-annotations=*'
+                    accept: 'application/json;odata.metadata=full'
+                    organization: 'https://org58211bdf.crm4.dynamics.com'
+                  }
+                  path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'salesorders\'))}(@{encodeURIComponent(encodeURIComponent(triggerBody()?[\'_salesorderid_value\']))})'
+                }
+              }
+              Get_Mapped_SalesForceId_for_Order: {
+                runAfter: {
+                  GetSalesForce__Product: [
+                    'Succeeded'
+                  ]
+                }
+                type: 'ApiConnection'
+                inputs: {
+                  host: {
+                    connection: {
+                      name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
+                    }
+                  }
+                  method: 'post'
+                  body: {
+                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE Name = @Name AND Entity=\'Order\' AND SalesForceId IS NOT NULL AND D365Id IS NOT NULL'
+                    formalParameters: {
+                      Name: 'NVARCHAR(100)'
+                    }
+                    actualParameters: {
+                      Name: '@body(\'Get_Order\')?[\'ordernumber\']'
+                    }
+                  }
+                  path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
+                }
+              }
+              Get_Product: {
+                runAfter: {
+                  Get_Order: [
+                    'Succeeded'
+                  ]
+                }
+                type: 'ApiConnection'
+                inputs: {
+                  host: {
+                    connection: {
+                      name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                    }
+                  }
+                  method: 'get'
+                  headers: {
+                    prefer: 'odata.include-annotations=*'
+                    accept: 'application/json;odata.metadata=full'
+                    organization: 'https://org58211bdf.crm4.dynamics.com'
+                  }
+                  path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'products\'))}(@{encodeURIComponent(encodeURIComponent(triggerBody()?[\'_productid_value\']))})'
+                }
+              }
+              Get_OmniSync_Configuration: {
+                type: 'ApiConnection'
+                inputs: {
+                  host: {
+                    connection: {
+                      name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                    }
+                  }
+                  method: 'get'
+                  headers: {
+                    prefer: 'odata.include-annotations=*'
+                    accept: 'application/json;odata.metadata=full'
+                    organization: 'https://org58211bdf.crm4.dynamics.com'
+                  }
+                  path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'omnisync_omnisyncconfigurations\'))}'
+                }
+              }
+              GetSalesForce__Product: {
+                runAfter: {
+                  Get_Product: [
+                    'Succeeded'
+                  ]
+                }
+                type: 'ApiConnection'
+                inputs: {
+                  host: {
+                    connection: {
+                      name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
+                    }
+                  }
+                  method: 'get'
+                  path: '/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Product2\'))}/items'
+                  queries: {
+                    '$filter': ' ProductCode eq \'@{body(\'Get_Product\')?[\'productnumber\']}\''
+                  }
+                }
               }
             }
           }
@@ -365,24 +447,8 @@ resource wf_d365_omnisync_orderproducts_insert 'Microsoft.Logic/workflows@2019-0
               }
             }
           }
-          runAfter: {
-            Initialize_CDC_record: [
-              'Succeeded'
-            ]
-          }
-          type: 'Scope'
-        }
-        Initialize_CDC_record: {
           runAfter: {}
-          type: 'InitializeVariable'
-          inputs: {
-            variables: [
-              {
-                name: 'CDCRecord'
-                type: 'object'
-              }
-            ]
-          }
+          type: 'Scope'
         }
       }
       outputs: {}

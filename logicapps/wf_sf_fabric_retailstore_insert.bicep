@@ -6,7 +6,9 @@ param location string ='northeurope'
 param wf_sf_fabric_omnisync_retailstore_insert_name string = 'wf-sf-fabric-omnisync-retailstore-insert-${suffix}'
 param ia_omnisync_id string=''
 param connections_eventhubs_id string=''
-param connections_salesforce_id string=''
+param connections_salesforce_id string=''                
+param workflows_wf_sf_d365_omnisyncinc_retailstores_externalid string = ''
+ 
 
 resource wf_sf_fabric_omnisync_retailstore_insert 'Microsoft.Logic/workflows@2019-05-01' = {
   name: wf_sf_fabric_omnisync_retailstore_insert_name
@@ -21,7 +23,7 @@ resource wf_sf_fabric_omnisync_retailstore_insert 'Microsoft.Logic/workflows@201
       contentVersion: '1.0.0.0'
       parameters: {
         integration_user: {
-          defaultValue: 'integration1@omnisync.com'
+          defaultValue: '005WU00000KkEXaYAN'
           type: 'String'
         }
         '$connections': {
@@ -193,7 +195,7 @@ resource wf_sf_fabric_omnisync_retailstore_insert 'Microsoft.Logic/workflows@201
                 inputs: {
                   host: {
                     connection: {
-                      name: '@parameters(\'$connections\')[\'eventhubs-1\'][\'connectionId\']'
+                      name: '@parameters(\'$connections\')[\'eventhubs\'][\'connectionId\']'
                     }
                   }
                   method: 'post'
@@ -204,6 +206,18 @@ resource wf_sf_fabric_omnisync_retailstore_insert 'Microsoft.Logic/workflows@201
                   queries: {
                     partitionKey: '0'
                   }
+                }
+              }
+              'wf-sf-d365-omnisyncinc-retailstores-prod-ne-01': {
+                type: 'Workflow'
+                inputs: {
+                  host: {
+                    workflow: {
+                      id: workflows_wf_sf_d365_omnisyncinc_retailstores_externalid
+                    }
+                    triggerName: 'When_a_HTTP_request__is_received'
+                  }
+                  body: '@body(\'Parse_XML_notifications_as_JSON\')'
                 }
               }
             }

@@ -239,7 +239,7 @@ resource wf_d365_omnisync_accounts_update 'Microsoft.Logic/workflows@2019-05-01'
               inputs: {
                 host: {
                   connection: {
-                    name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                    name: '@parameters(\'$connections\')[\'commondataservice-1\'][\'connectionId\']'
                   }
                 }
                 method: 'get'

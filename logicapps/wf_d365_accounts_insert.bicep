@@ -136,7 +136,7 @@ resource wf_d365_omnisync_accounts_insert 'Microsoft.Logic/workflows@2019-05-01'
                 inputs: {
                   host: {
                     connection: {
-                      name: '@parameters(\'$connections\')[\'sql\'][\'connectionId\']'
+                      name: '@parameters(\'$connections\')[\'sql-1\'][\'connectionId\']'
                     }
                   }
                   method: 'post'
@@ -146,7 +146,7 @@ resource wf_d365_omnisync_accounts_insert 'Microsoft.Logic/workflows@2019-05-01'
                       Name: 'NVARCHAR(100)'
                     }
                     actualParameters: {
-                      Name: '@triggerBody()?[\'name\']'
+                      Name: '@triggerBody()?[\'accountnumber\']'
                     }
                   }
                   path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
@@ -159,7 +159,7 @@ resource wf_d365_omnisync_accounts_insert 'Microsoft.Logic/workflows@2019-05-01'
                     inputs: {
                       host: {
                         connection: {
-                          name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
+                          name: '@parameters(\'$connections\')[\'salesforce-1\'][\'connectionId\']'
                         }
                       }
                       method: 'post'
@@ -277,7 +277,7 @@ resource wf_d365_omnisync_accounts_insert 'Microsoft.Logic/workflows@2019-05-01'
                       inputs: {
                         host: {
                           connection: {
-                            name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                            name: '@parameters(\'$connections\')[\'commondataservice-1\'][\'connectionId\']'
                           }
                         }
                         method: 'patch'
@@ -327,7 +327,7 @@ resource wf_d365_omnisync_accounts_insert 'Microsoft.Logic/workflows@2019-05-01'
               inputs: {
                 host: {
                   connection: {
-                    name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                    name: '@parameters(\'$connections\')[\'commondataservice-1\'][\'connectionId\']'
                   }
                 }
                 method: 'get'

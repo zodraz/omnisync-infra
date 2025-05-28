@@ -40,7 +40,7 @@ resource wf_d365_omnisync_retailstores_update 'Microsoft.Logic/workflows@2019-05
               }
             }
             body: {
-              entityname: 'account'
+              entityname: 'cr989_retailstore'
               message: 3
               scope: 4
               version: 1
@@ -75,7 +75,7 @@ resource wf_d365_omnisync_retailstores_update 'Microsoft.Logic/workflows@2019-05
                       content: '@triggerBody()'
                       integrationAccount: {
                         map: {
-                          name: 'D365AccountToCustomer'
+                          name: 'D365RetailStoreToStore'
                         }
                       }
                     }
@@ -137,20 +137,62 @@ resource wf_d365_omnisync_retailstores_update 'Microsoft.Logic/workflows@2019-05
                   }
                   method: 'post'
                   body: {
-                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE D365Id=@D365Id AND Entity=\'Customer\' AND SalesForceId IS NOT NULL'
+                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE D365Id=@D365Id AND Entity=\'Store\' AND SalesForceId IS NOT NULL'
                     formalParameters: {
                       D365Id: 'NVARCHAR(100)'
                     }
                     actualParameters: {
-                      D365Id: '@triggerBody()?[\'accountid\']'
+                      D365Id: '@triggerBody()?[\'cr989_retailstoreid\']'
                     }
                   }
                   path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
                 }
               }
-              'Check_if_Mapping_Customer_(for_Update)_row_exists_': {
+              'Check_if_Mapping_RetailStore_(for_Update)_row_exists_': {
                 actions: {
-                  Update_Account: {
+                  Get_Account: {
+                    type: 'ApiConnection'
+                    inputs: {
+                      host: {
+                        connection: {
+                          name: '@parameters(\'$connections\')[\'commondataservice\'][\'connectionId\']'
+                        }
+                      }
+                      method: 'get'
+                      headers: {
+                        prefer: 'odata.include-annotations=*'
+                        accept: 'application/json;odata.metadata=full'
+                        organization: 'https://org58211bdf.crm4.dynamics.com'
+                      }
+                      path: '/api/data/v9.1/@{encodeURIComponent(encodeURIComponent(\'accounts\'))}(@{encodeURIComponent(encodeURIComponent(triggerBody()?[\'_cr989_account_value\']))})'
+                    }
+                  }
+                  Get_SalesForce_Account: {
+                    runAfter: {
+                      Get_Account: [
+                        'Succeeded'
+                      ]
+                    }
+                    type: 'ApiConnection'
+                    inputs: {
+                      host: {
+                        connection: {
+                          name: '@parameters(\'$connections\')[\'salesforce\'][\'connectionId\']'
+                        }
+                      }
+                      method: 'get'
+                      path: '/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items'
+                      queries: {
+                        '$filter': 'Name eq \'@{body(\'Get_Account\')?[\'name\']}\''
+                      }
+                    }
+                  }
+                  Update_RetailStore: {
+                    runAfter: {
+                      Get_SalesForce_Account: [
+                        'Succeeded'
+                      ]
+                    }
                     type: 'ApiConnection'
                     inputs: {
                       host: {
@@ -160,26 +202,18 @@ resource wf_d365_omnisync_retailstores_update 'Microsoft.Logic/workflows@2019-05
                       }
                       method: 'patch'
                       body: {
-                        Name: '@triggerBody()?[\'name\']'
-                        AccountNumber: '@triggerBody()?[\'accountnumber\']'
-                        BillingLatitude: '@triggerBody()?[\'address1_latitude\']'
-                        BillingLongitude: '@triggerBody()?[\'address1_longitude\']'
-                        ShippingStreet: '@triggerBody()?[\'address1_line1\']'
-                        ShippingCity: '@triggerBody()?[\'address1_city\']'
-                        ShippingState: '@triggerBody()?[\'address1_stateorprovince\']'
-                        ShippingPostalCode: '@triggerBody()?[\'address1_postalcode\']'
-                        ShippingCountry: '@triggerBody()?[\'address1_country\']'
-                        Phone: '@triggerBody()?[\'telephone1\']'
-                        Fax: '@triggerBody()?[\'address1_fax\']'
-                        Website: '@triggerBody()?[\'websiteurl\']'
-                        Industry: 'Retail'
-                        AnnualRevenue: '@triggerBody()?[\'revenue\']'
-                        NumberOfEmployees: '@triggerBody()?[\'numberofemployees\']'
-                        Description: '@triggerBody()?[\'description\']'
+                        AccountId__c: '@first(body(\'Get_SalesForce_Account\')?[\'value\'])?[\'Id\']'
+                        StoreType__c: '@{triggerBody()?[\'_cr989_storetype_label\']}'
+                        StoreCode__c: '@triggerBody()?[\'cr989_storecode\']'
+                        Name: '@triggerBody()?[\'cr989_storename\']'
                         CurrencyIsoCode: 'EUR'
-                        Email__c: '@triggerBody()?[\'emailaddress1\']'
+                        Description__c: '@triggerBody()?[\'cr989_storedescription\']'
+                        EmployeeCount__c: '@triggerBody()?[\'cr989_employeecount\']'
+                        Fax__c: '@triggerBody()?[\'cr989_storefax\']'
+                        Phone__c: '@triggerBody()?[\'cr989_storephone\']'
+                        StoreTypeId__c: '@triggerBody()?[\'cr989_storetype\']'
                       }
-                      path: '/v3/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items/@{encodeURIComponent(encodeURIComponent(body(\'Get_Mapped_SalesForceId_for_Update\')?[\'ResultSets\'][\'Table1\'][0][\'SalesForceId\']))}'
+                      path: '/v3/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'RetailStore__c\'))}/items/@{encodeURIComponent(encodeURIComponent(body(\'Get_Mapped_SalesForceId_for_Update\')?[\'ResultSets\']?[\'Table1\']?[0]?[\'SalesForceId\']))}'
                     }
                   }
                 }
@@ -190,12 +224,12 @@ resource wf_d365_omnisync_retailstores_update 'Microsoft.Logic/workflows@2019-05
                 }
                 else: {
                   actions: {
-                    'Response_Account_not_found_(on_Update)': {
+                    'Response_RetailStore_not_found_(on_Update)': {
                       type: 'Response'
                       kind: 'Http'
                       inputs: {
                         statusCode: 404
-                        body: 'Account  @{triggerBody()?[\'accountnumber\']}- @{triggerBody()?[\'name\']} to update not found on Dynamics365'
+                        body: 'RetailStore @{triggerBody()?[\'cr989_storecode\']}-@{triggerBody()?[\'cr989_storename\']}  to update not found on Dynamics365'
                       }
                     }
                   }

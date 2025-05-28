@@ -137,7 +137,7 @@ resource wf_sf_fabric_omnisync_accounts 'Microsoft.Logic/workflows@2019-05-01' =
                     SicDesc: {}
                     OperatingHoursId: {}
                     Email__c: {}
-                    SyncStatus__c: {}
+                    Sync_Status__c: {}
                   }
                 }
               }

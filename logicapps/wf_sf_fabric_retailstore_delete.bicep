@@ -20,7 +20,7 @@ resource wf_sf_fabric_omnisync_retailstore_delete 'Microsoft.Logic/workflows@201
       contentVersion: '1.0.0.0'
       parameters: {
         integration_user: {
-          defaultValue: 'integration1@omnisync.com'
+          defaultValue: '005WU00000KkEXaYAN'
           type: 'String'
         }
         '$connections': {
@@ -211,7 +211,7 @@ resource wf_sf_fabric_omnisync_retailstore_delete 'Microsoft.Logic/workflows@201
                 inputs: {
                   host: {
                     connection: {
-                      name: '@parameters(\'$connections\')[\'eventhubs-1\'][\'connectionId\']'
+                      name: '@parameters(\'$connections\')[\'eventhubs\'][\'connectionId\']'
                     }
                   }
                   method: 'post'

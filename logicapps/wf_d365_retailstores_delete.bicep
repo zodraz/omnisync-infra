@@ -40,7 +40,7 @@ resource wf_d365_omnisync_retailstores_delete 'Microsoft.Logic/workflows@2019-05
               }
             }
             body: {
-              entityname: 'account'
+              entityname: 'cr989_retailstore'
               message: 2
               scope: 4
               version: 1
@@ -75,7 +75,7 @@ resource wf_d365_omnisync_retailstores_delete 'Microsoft.Logic/workflows@2019-05
                       content: '@triggerBody()'
                       integrationAccount: {
                         map: {
-                          name: 'D365AccountToCustomer'
+                          name: 'D365RetailStoreToStore'
                         }
                       }
                     }
@@ -128,6 +128,11 @@ resource wf_d365_omnisync_retailstores_delete 'Microsoft.Logic/workflows@2019-05
                 type: 'Scope'
               }
               Get_Mapped_SalesForceId: {
+                runAfter: {
+                  Delay: [
+                    'Succeeded'
+                  ]
+                }
                 type: 'ApiConnection'
                 inputs: {
                   host: {
@@ -137,20 +142,20 @@ resource wf_d365_omnisync_retailstores_delete 'Microsoft.Logic/workflows@2019-05
                   }
                   method: 'post'
                   body: {
-                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE D365Id=@D365Id AND Entity=\'Customer\' AND SalesForceId IS NOT NULL'
+                    query: 'SELECT * \nFROM OmniSync_DE_LH_320_Gold_Contoso.dbo.MasterDataMapping\nWHERE D365Id=@D365Id AND Entity=\'Store\' AND SalesForceId IS NOT NULL'
                     formalParameters: {
                       D365Id: 'NVARCHAR(100)'
                     }
                     actualParameters: {
-                      D365Id: '@triggerBody()?[\'accountid\']'
+                      D365Id: '@triggerBody()?[\'cr989_retailstoreid\']'
                     }
                   }
                   path: '/v2/datasets/@{encodeURIComponent(encodeURIComponent(\'4zcf2t243paebjgwyd6y3asocu-pkxdk222q4ne5d3at4fcfuha2a.datawarehouse.fabric.microsoft.com\'))},@{encodeURIComponent(encodeURIComponent(\'OmniSync_DE_LH_320_Gold_Contoso\'))}/query/sql'
                 }
               }
-              Check_if_Mapping_Customer_row_exists_: {
+              Check_if_Mapping_RetailStore_row_exists_: {
                 actions: {
-                  Delete_Account: {
+                  Delete_RetailStore: {
                     type: 'ApiConnection'
                     inputs: {
                       host: {
@@ -159,7 +164,7 @@ resource wf_d365_omnisync_retailstores_delete 'Microsoft.Logic/workflows@2019-05
                         }
                       }
                       method: 'delete'
-                      path: '/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'Account\'))}/items/@{encodeURIComponent(encodeURIComponent(body(\'Get_Mapped_SalesForceId\')?[\'ResultSets\'][\'Table1\'][0][\'SalesForceId\']))}'
+                      path: '/datasets/default/tables/@{encodeURIComponent(encodeURIComponent(\'RetailStore__c\'))}/items/@{encodeURIComponent(encodeURIComponent(body(\'Get_Mapped_SalesForceId\')?[\'ResultSets\'][\'Table1\'][0][\'SalesForceId\']))}'
                     }
                   }
                 }
@@ -170,12 +175,12 @@ resource wf_d365_omnisync_retailstores_delete 'Microsoft.Logic/workflows@2019-05
                 }
                 else: {
                   actions: {
-                    Response_Account_not_found: {
+                    Response_RetailStore_not_found: {
                       type: 'Response'
                       kind: 'Http'
                       inputs: {
                         statusCode: 404
-                        body: 'Account with D365Id  @{triggerBody()?[\'accountid\']} to delete not found on Dynamics365'
+                        body: 'RetailStore @{triggerBody()?[\'cr989_storename\']}with D365Id   to delete not found on Dynamics365'
                       }
                     }
                   }
@@ -193,6 +198,15 @@ resource wf_d365_omnisync_retailstores_delete 'Microsoft.Logic/workflows@2019-05
                   ]
                 }
                 type: 'If'
+              }
+              Delay: {
+                type: 'Wait'
+                inputs: {
+                  interval: {
+                    count: 3
+                    unit: 'Minute'
+                  }
+                }
               }
             }
           }
